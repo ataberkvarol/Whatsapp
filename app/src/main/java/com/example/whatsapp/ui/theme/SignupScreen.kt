@@ -64,19 +64,9 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
             val passwordState = remember { mutableStateOf(TextFieldValue()) }
             var name by remember { mutableStateOf(TextFieldValue("")) }
             val focus = LocalFocusManager.current
-/*
-            Image(
-                painter = painterResource(id = R.drawable.chat),
-                contentDescription = null,
-                modifier = Modifier
-                    .width(200.dp)
-                    .padding(top = 16.dp)
-                    .padding(8.dp)
-            )
-            */
 
             Text(
-                text = "signup",
+                text = "Sign Up",
                 modifier = Modifier.padding(8.dp),
                 fontSize = 30.sp,
                 fontFamily = FontFamily.Default

@@ -24,6 +24,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.lang.Exception
 import javax.inject.Inject
 import com.example.whatsapp.data.UserData
+import com.example.whatsapp.data.passwordChecker
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.toObject
@@ -125,70 +126,40 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
             }.addOnFailureListener { handleException(it, "cannot create user") }
         }
     }
-    @Composable
-    private fun passwordValidation(password: String):Boolean {
-        val context = LocalContext.current
-        if (password.isBlank()){
-
-            handleException(customMessage = "please fill the password field")
-            Log.e("error", "please fill the password field")
-            return false
-        }
-        if(password.length < 8){
-            handleException(customMessage = "password must be longer than 8 characters")
-            Log.e("error", "password must be longer than 8 characters")
-            Toast.makeText(context,"password must be longer than 8 characters",Toast.LENGTH_LONG).show()
-            return false
-        }
-        if (!password.matches(".*[A-Z].*".toRegex())){
-                handleException(customMessage = "password must contain 1 uppercase character")
-                Log.e("error", "password must contain 1 uppercase character")
-                return false
-            }
-        if (!password.matches(".*[a-z].*".toRegex())){
-            handleException(customMessage = "password must contain 1 lowercase character")
-            Log.e("error", "password must contain 1 lowercase character")
-            return false
-        }
-        if (!password.matches(".*[@#\$%^&+=].*".toRegex())){
-            handleException(customMessage = "password must contain 1 special character")
-            Log.e("error", "password must contain 1 special character")
-             Toast.makeText(context,"password must contain 1 special character",Toast.LENGTH_LONG).show()
-            return false
-        }
-        if (password.contains(" ")){
-            handleException(customMessage = "password must not contain space character")
-            Log.e("error", "password must not contail space character")
-            return false
-        }
-
-        return true
-    }
-
-
-    @Composable
     fun onLogin(email: String, password: String) {
-       if (passwordValidation(password)) {
+           if (!email.isBlank() || !password.isBlank()) {
+               if (passwordChecker().checkNumberOfChar(password)){
+                   if (passwordChecker().checkSpaces(password)){
+                       if (passwordChecker().checkSymbol(password)){
+                           if (passwordChecker().checkLowerCase(password)){
+                               if (passwordChecker().checkUpperCase(password)){
+                                   inProgress.value = true
+                                   auth.signInWithEmailAndPassword(email, password)
+                                       .addOnCompleteListener { task ->
+                                           if (task.isSuccessful) {
+                                               signedIn.value = true
+                                               inProgress.value = false
+                                               auth.currentUser?.uid?.let { getUserData(it) }
+                                           } else
+                                               handleException(task.exception, "login failed")
+                                       }.addOnFailureListener { handleException(it, "login failed") }
 
-           if (email.isBlank() || password.isBlank()) {
+                               }else
+                                   handleException(customMessage = "there must be one uppercase character in the password")
+                           }else
+                               handleException(customMessage = "there must be one lowercase character in the password")
+                       }else
+                           handleException(customMessage = "there must be one special character in the password")
+                   }else
+                       handleException(customMessage = "there should not be space character in the password")
+               }else
+                   handleException(customMessage = "the password must be longer or equal than 8 characters")
+
+           }else {
                handleException(customMessage = "please fill the required fields")
                Log.e("error", "please fill the required fields")
-               return
            }
-           inProgress.value = true
-           auth.signInWithEmailAndPassword(email, password)
-               .addOnCompleteListener { task ->
-                   if (task.isSuccessful) {
-                       signedIn.value = true
-                       inProgress.value = false
-                       auth.currentUser?.uid?.let { getUserData(it) }
-                   } else
-                       handleException(task.exception, "login failed")
-               }.addOnFailureListener { handleException(it, "login failed") }
-       }else
-           handleException(customMessage = "login failed")
     }
-
     fun onLogout(){
         auth.signOut()
         signedIn.value = false
@@ -211,9 +182,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                 //populateChat() fixme
             }
         }
-
     }
-
     private fun createStatus(imageUrl: String?){
         val newStatus = com.example.whatsapp.data.Status(
             ChatUser(
@@ -227,13 +196,11 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
         )
         db.collection(COLLECTION_STATUS).document().set(newStatus)
     }
-
     private fun uploadProfileImage(uri: Uri) {
        uploadImage(uri){
            createOrUpdateProfile(imageUrl = "url")//fixme
        }
     }
-
     private fun uploadImage(uri: Uri, function: () -> Unit) {
         TODO("Not yet implemented")
     }
@@ -285,14 +252,11 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                 }
         }
     }
-
     fun  uploadStatus(imageUri:Uri){
         uploadImage(imageUri){
             createStatus(imageUrl = "url") // fixme
-
         }
     }
-
     fun populateStatuses(){
         inProgressStatus.value = true
         val milliTimeData = 24L * 60 * 60 * 1000
@@ -302,7 +266,6 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
             .where(Filter.or(
                 Filter.equalTo("user1.userId",userData.value?.userId),
                 Filter.equalTo("user2.userId",userData.value?.userId)
-
             )
             )
             .addSnapshotListener{value, error ->
@@ -352,11 +315,9 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
         chatMessages.value = listOf()
         currentChatMessagesListener = null
     }
-
     fun onSendReply(chatId:String,message: String){
         val time = Calendar.getInstance().time.toString()
         val msg = Message(userData.value?.userId,message,time)
         db.collection(COLLECTION_CHAT).document(chatId).collection(COLLECTION_MESSAGES).document().set(msg)
     }
-
 }

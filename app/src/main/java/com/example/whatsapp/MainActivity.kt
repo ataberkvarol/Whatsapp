@@ -23,6 +23,7 @@ import com.example.whatsapp.ui.theme.WhatsappTheme
 import com.example.whatsapp.ui.theme.loginScreen
 import com.example.whatsapp.ui.theme.personalChatScreen
 import com.example.whatsapp.ui.theme.profileScreen
+import com.example.whatsapp.ui.theme.resetPassword
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -32,6 +33,7 @@ sealed class DestinationScreen(val route: String){
     object Login : DestinationScreen("login")
     object ProfileScreen : DestinationScreen("ProfileScreen")
     object ChatListScreen : DestinationScreen("ChatListScreen")
+    object  ResetPasswordScreen : DestinationScreen("ResetPassword")
     object StatusScreen : DestinationScreen("StatusScreen"){
         fun createRoute(id:String) = "StatusScreen/$id"
     }
@@ -58,12 +60,16 @@ fun ChatAppNavigation() {
     val navController = rememberNavController()
     val vm = hiltViewModel<CViewModel>()
     
-    NavHost(navController = navController , startDestination =  DestinationScreen.Login.route){
+    NavHost(navController = navController , startDestination =  DestinationScreen.ProfileScreen.route){
         composable(DestinationScreen.Signup.route){
             SignupScreen(navController, vm)
         }
         composable(DestinationScreen.Login.route){
             loginScreen( navController,vm )
+        }
+        composable(DestinationScreen.ResetPasswordScreen.route){
+            resetPassword(navController = navController, vm = vm)
+
         }
         composable(DestinationScreen.ProfileScreen.route){
             profileScreen( navController, vm)

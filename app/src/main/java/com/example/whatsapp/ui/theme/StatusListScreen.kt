@@ -74,7 +74,8 @@ fun StatusListScreen(navController: NavController, vm: CViewModel) {
                         ) {
                             Text(text = "No statuses available")
                         }
-                    /* //fix me
+                        /*
+                     //fix me
 
                     else {
                         if (myStatuses.isNotEmpty()) {
@@ -84,7 +85,7 @@ fun StatusListScreen(navController: NavController, vm: CViewModel) {
                             ) {
                                 navigateTo(
                                     navController,
-                                    DestinationScreen.Status.createRoute(myStatuses[0].user.userId)
+                                    DestinationScreen.StatusScreen.createRoute(myStatuses[0].user?.userId)
                                 )
                             }
 

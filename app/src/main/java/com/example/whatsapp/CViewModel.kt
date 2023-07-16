@@ -1,19 +1,22 @@
 package com.example.whatsapp
 
 import android.annotation.SuppressLint
-import android.app.PendingIntent.getActivity
-import android.app.usage.UsageEvents
-import android.content.Context
-import android.media.metrics.Event
-import android.util.EventLog
+import android.net.Uri
+import android.provider.CalendarContract.CalendarAlerts
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
+import com.example.whatsapp.data.COLLECTION_CHAT
+import com.example.whatsapp.data.COLLECTION_MESSAGES
+import com.example.whatsapp.data.COLLECTION_STATUS
 import com.example.whatsapp.data.COLLECTON_USER
+import com.example.whatsapp.data.ChatData
+import com.example.whatsapp.data.ChatUser
+import com.example.whatsapp.data.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -21,17 +24,32 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.lang.Exception
 import javax.inject.Inject
 import com.example.whatsapp.data.UserData
+import com.google.firebase.firestore.Filter
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.toObject
-
+import com.google.firebase.firestore.ktx.toObjects
+import java.util.Calendar
+import javax.net.ssl.SSLEngineResult.Status
 
 
 @HiltViewModel
 class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFirestore, val storage: FirebaseStorage):ViewModel() {
 
+    // sign in
     val inProgress = mutableStateOf(false)
     val popUpNotification = mutableStateOf<com.example.whatsapp.data.Event<String>?>(null)
     val signedIn = mutableStateOf(false)
     val userData = mutableStateOf<UserData?>(null)
+
+    // chat
+    val chats = mutableStateOf<List<ChatData>>(listOf())
+    val inProgressChats = mutableStateOf(false)
+    val chatMessages = mutableStateOf<List<Message>>(listOf())
+    val inProgressMessageChats = mutableStateOf(false)
+    // status screen
+    val status = mutableStateOf<List<Status>>(listOf())
+    val inProgressStatus = mutableStateOf(false)
+    var currentChatMessagesListener: ListenerRegistration? = null
 
     init {
         //onLogout()
@@ -176,10 +194,8 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
         signedIn.value = false
         userData.value = null
         popUpNotification.value = com.example.whatsapp.data.Event("logged out")
+        chats.value = listOf()
     }
-
-
-
     private fun getUserData(uid:String){
 
         inProgress.value = true
@@ -190,8 +206,157 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
             if (value != null){
                 val user = value.toObject<UserData>()
                 userData.value = user
+                inProgress.value = false
+                populateStatuses()
+                //populateChat() fixme
             }
         }
 
     }
+
+    private fun createStatus(imageUrl: String?){
+        val newStatus = com.example.whatsapp.data.Status(
+            ChatUser(
+                userData.value?.userId,
+                userData.value?.name,
+                userData.value?.imageUrl,
+                userData.value?.number
+            ) as ChatUser,
+            imageUrl,
+            System.currentTimeMillis()
+        )
+        db.collection(COLLECTION_STATUS).document().set(newStatus)
+    }
+
+    private fun uploadProfileImage(uri: Uri) {
+       uploadImage(uri){
+           createOrUpdateProfile(imageUrl = "url")//fixme
+       }
+    }
+
+    private fun uploadImage(uri: Uri, function: () -> Unit) {
+        TODO("Not yet implemented")
+    }
+    fun onAddChat(number: String){
+        if (number.isEmpty() || !number.isDigitsOnly())
+            handleException(customMessage = "number must contain only digits")
+        else{
+            db.collection(COLLECTION_CHAT).where(Filter.or(
+                Filter.and(Filter.equalTo("user1.number",number),
+                    Filter.equalTo("user2.number",userData.value?.number)),
+                Filter.and
+                    (Filter.equalTo("user1.number",userData.value?.number),
+                    Filter.equalTo("user2.number",number))
+            )
+            )
+                .get()
+                .addOnSuccessListener {
+                    if (it.isEmpty){
+                        db.collection(COLLECTON_USER).whereEqualTo("number",number)
+                            .get()
+                            .addOnSuccessListener {
+                                if (it.isEmpty)
+                                    handleException(customMessage = "cannot retrive data from user with number $number")
+                                else{
+                                    val chatPartner = it.toObjects<UserData>()[0]
+                                    val id = db.collection(COLLECTION_CHAT).document().id
+                                    val chat = ChatData(id,
+                                    ChatUser(
+                                        userData.value?.userId,
+                                        userData.value?.number,
+                                        userData.value?.name,
+                                        userData.value?.imageUrl
+                                    ),
+                                        ChatUser(
+                                            chatPartner.userId,
+                                            chatPartner.number,
+                                            chatPartner.name,
+                                            chatPartner.imageUrl
+                                        )
+                                    )
+                                    db.collection(COLLECTION_CHAT).document(id).set(chat)
+                                }
+                            }.addOnFailureListener {
+                                handleException(it)
+                            }
+                    }else{
+                        handleException(customMessage = "chat already exists")
+                    }
+                }
+        }
+    }
+
+    fun  uploadStatus(imageUri:Uri){
+        uploadImage(imageUri){
+            createStatus(imageUrl = "url") // fixme
+
+        }
+    }
+
+    fun populateStatuses(){
+        inProgressStatus.value = true
+        val milliTimeData = 24L * 60 * 60 * 1000
+        val cutOff = System.currentTimeMillis() - milliTimeData
+
+        db.collection(COLLECTION_CHAT)
+            .where(Filter.or(
+                Filter.equalTo("user1.userId",userData.value?.userId),
+                Filter.equalTo("user2.userId",userData.value?.userId)
+
+            )
+            )
+            .addSnapshotListener{value, error ->
+                if (error != null)
+                    handleException(error)
+                if (value != null) {
+                    val currentConnections = arrayListOf(userData.value?.userId)
+                    val chats = value.toObjects<ChatData>()
+                    chats.forEach{
+                        chat ->
+                        if (chat.user1.userId == userData.value?.userId)
+                            currentConnections.add(chat.user2.userId)
+                        else
+                            currentConnections.add(chat.user1.userId)
+                    }
+                    db.collection(COLLECTION_STATUS)
+                        .whereGreaterThan("timestamp",cutOff)
+                        .whereIn("user.userId",currentConnections)
+                        .addSnapshotListener{value,error ->
+                            if (error != null)
+                                handleException(error)
+                            if (value!= null)
+                                status.value = value.toObjects()
+                            inProgressStatus.value = false
+                        }
+                }
+            }
+    }
+    fun populateChat(chatId: String){
+        inProgressChats.value = true
+       currentChatMessagesListener = db.collection(COLLECTION_CHAT).where(Filter.or(
+            Filter.equalTo("user1.userId",userData.value?.userId),
+            Filter.equalTo("user2.userId",userData.value?.userId)
+        ))
+            .addSnapshotListener{value,error ->
+                if (error!=null)
+                    handleException(error)
+                if (value!= null)
+                    chatMessages.value = value.documents
+                        .mapNotNull { it.toObject<Message>() }
+                        .sortedBy { it.timestamp }
+                inProgressChats.value = false
+            }
+    }
+
+    fun depopulateChat(){
+        chatMessages.value = listOf()
+        currentChatMessagesListener = null
+    }
+
+    fun onSendReply(chatId:String,message: String){
+        val time = Calendar.getInstance().time.toString()
+        val msg = Message(userData.value?.userId,message,time)
+        db.collection(COLLECTION_CHAT).document(chatId).collection(COLLECTION_MESSAGES).document().set(msg)
+    }
+
 }

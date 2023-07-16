@@ -1,5 +1,8 @@
 package com.example.whatsapp
 
+import ChatListScreen
+import StatusListScreen
+import StatusScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,13 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.whatsapp.ui.theme.ChatListScreen
 import com.example.whatsapp.ui.theme.SignupScreen
-import com.example.whatsapp.ui.theme.SingleStatusScreen
-import com.example.whatsapp.ui.theme.StatusListScreen
 import com.example.whatsapp.ui.theme.WhatsappTheme
 import com.example.whatsapp.ui.theme.loginScreen
 import com.example.whatsapp.ui.theme.personalChatScreen
@@ -68,16 +69,21 @@ fun ChatAppNavigation() {
             profileScreen( navController, vm)
         }
         composable(DestinationScreen.StatusListScreen.route){
-            StatusListScreen(navController = navController)
+            StatusListScreen(navController = navController, vm = vm)
         }
         composable(DestinationScreen.ChatListScreen.route){
-            ChatListScreen(navController = navController)
+            ChatListScreen(navController = navController, vm = vm)
         }
         composable(DestinationScreen.StatusScreen.route){
-            SingleStatusScreen(statusId = "123")
+            val userId = it.arguments?.getString("userId")
+            userId?.let {
+                StatusScreen(navController = navController, vm = vm, userId = userId)
+            }
         }
-        composable(DestinationScreen.StatusScreen.route){
-            personalChatScreen(chatId = "123")
+        composable(DestinationScreen.PersonalChat.route){
+            val chatId = it.arguments?.getString("chatId")
+            chatId?.let {  personalChatScreen(navController = navController, vm = vm, chatId = it) }
+
         }
     }
     

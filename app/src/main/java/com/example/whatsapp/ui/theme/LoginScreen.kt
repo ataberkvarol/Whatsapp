@@ -1,5 +1,6 @@
 package com.example.whatsapp.ui.theme
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -43,6 +45,7 @@ import java.security.KeyStore.PasswordProtection
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun loginScreen(navController:NavController, vm:CViewModel){
+    var isSignedIn = false
     val MaxLength = 30
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -58,6 +61,7 @@ fun loginScreen(navController:NavController, vm:CViewModel){
             val passwordState = remember { mutableStateOf(TextFieldValue()) }
             var name by remember { mutableStateOf(TextFieldValue("")) }
             val focus = LocalFocusManager.current
+
             /*
             Image(
                 painter = painterResource(id = R.drawable.chat),
@@ -66,6 +70,7 @@ fun loginScreen(navController:NavController, vm:CViewModel){
                     .width(200.dp)
                     .padding(top = 16.dp)
                     .padding(8.dp)
+
             )
             */
             Text(
@@ -104,12 +109,17 @@ fun loginScreen(navController:NavController, vm:CViewModel){
             Button(
                 onClick = {
                     focus.clearFocus(force = true)
-                    vm.onLogin(
+                    Log.e("loginscreen"+passwordState.value.text,"loginscreen"+passwordState.value.text)
+                   isSignedIn = vm.onLogin(
                         emailState.value.text,
                         passwordState.value.text
                     )
+                    Log.e(isSignedIn.toString(), isSignedIn.toString())
+                    if(isSignedIn)
+                        navigateTo(navController,DestinationScreen.ProfileScreen.route)
+
                 },
-                modifier = Modifier.padding(8.dp)
+                //modifier = Modifier.clickable{ navigateTo(navController,DestinationScreen.ProfileScreen.route) }
             ) {
                 Text(text = "LOG IN")
             }

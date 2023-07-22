@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
 import com.example.whatsapp.data.COLLECTION_CHAT
 import com.example.whatsapp.data.COLLECTION_MESSAGES
 import com.example.whatsapp.data.COLLECTION_STATUS
@@ -41,6 +42,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
     val popUpNotification = mutableStateOf<com.example.whatsapp.data.Event<String>?>(null)
     val signedIn = mutableStateOf(false)
     val userData = mutableStateOf<UserData?>(null)
+
 
     // chat
     val chats = mutableStateOf<List<ChatData>>(listOf())
@@ -126,39 +128,61 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
             }.addOnFailureListener { handleException(it, "cannot create user") }
         }
     }
-    fun onLogin(email: String, password: String) {
+    fun onLogin(email: String, password: String):Boolean {
+        Log.e("Model"+password,"Model"+password)
            if (!email.isBlank() || !password.isBlank()) {
+
+               inProgress.value = true
+               auth.signInWithEmailAndPassword(email, password)
+                   .addOnCompleteListener { task ->
+                       if (task.isSuccessful) {
+                           signedIn.value = true
+                           inProgress.value = false
+                           auth.currentUser?.uid?.let { getUserData(it) }
+                       } else {
+                           handleException(task.exception, "login failed")
+                           Log.e("error", task.exception.toString())
+                       }
+                   }.addOnFailureListener { handleException(it, "login failed") }
+                    if(signedIn.value == true) {
+                        return true
+                    }else
+                        return false
+           } else {
+        handleException(customMessage = "please fill the required fields")
+        Log.e("error", "please fill the required fields")
+               return false
+    }
+
+
+        /*
                if (passwordChecker().checkNumberOfChar(password)){
                    if (passwordChecker().checkSpaces(password)){
                        if (passwordChecker().checkSymbol(password)){
                            if (passwordChecker().checkLowerCase(password)){
                                if (passwordChecker().checkUpperCase(password)){
-                                   inProgress.value = true
-                                   auth.signInWithEmailAndPassword(email, password)
-                                       .addOnCompleteListener { task ->
-                                           if (task.isSuccessful) {
-                                               signedIn.value = true
-                                               inProgress.value = false
-                                               auth.currentUser?.uid?.let { getUserData(it) }
-                                           } else
-                                               handleException(task.exception, "login failed")
-                                       }.addOnFailureListener { handleException(it, "login failed") }
+                               */
 
+                            /*
                                }else
                                    handleException(customMessage = "there must be one uppercase character in the password")
+                                    Log.e("there must be one uppercase character in the password","there must be one uppercase character in the password")
                            }else
                                handleException(customMessage = "there must be one lowercase character in the password")
+                           Log.e("there must be one lowercase character in the password","there must be one lowercase character in the password")
                        }else
                            handleException(customMessage = "there must be one special character in the password")
+                       Log.e("there must be one special character in the password","there must be one special character in the password")
                    }else
                        handleException(customMessage = "there should not be space character in the password")
+                   Log.e("there should not be space character in the password","there should not be space character in the password")
                }else
                    handleException(customMessage = "the password must be longer or equal than 8 characters")
+               Log.e("the password must be longer or equal than 8 characters","the password must be longer or equal than 8 characters")
 
-           }else {
-               handleException(customMessage = "please fill the required fields")
-               Log.e("error", "please fill the required fields")
-           }
+                             */
+
+
     }
     fun onLogout(){
         auth.signOut()

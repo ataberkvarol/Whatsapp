@@ -29,14 +29,14 @@ import com.example.whatsapp.TitleText
 import com.example.whatsapp.navigateTo
 import com.example.whatsapp.ui.theme.BottomNavigation
 import com.example.whatsapp.ui.theme.BottomNavigationMenu
-import com.example.whatsapp.ui.theme.CommonProgressSpinner
+//import com.example.whatsapp.ui.theme.CommonProgressSpinner
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatusListScreen(navController: NavController, vm: CViewModel) {
     val inProgress = vm.inProgressStatus.value
     if (inProgress)
-        CommonProgressSpinner()
+  //      CommonProgressSpinner()
     else {
         val statuses = vm.status.value
         val userData = vm.userData.value

@@ -29,7 +29,8 @@ import org.checkerframework.common.subtyping.qual.Bottom as Bottom1
 enum class BottomNavigation(val icon:Int, val navDestination: DestinationScreen){
     PROFILE(R.drawable.person_profile,DestinationScreen.ProfileScreen),
     CHATLIST(R.drawable.baseline_chat_24,DestinationScreen.ChatListScreen),
-    STATUSLIST(R.drawable.baseline_system_update_24,DestinationScreen.StatusListScreen)
+    STATUSLIST(R.drawable.baseline_stream_24,DestinationScreen.StatusListScreen),
+    SETTINGS(R.drawable.baseline_settings_24,DestinationScreen.SettingsScreen)
 }
 @Composable
 fun BottomNavigationMenu(selectedItem:BottomNavigation, navController: NavController){

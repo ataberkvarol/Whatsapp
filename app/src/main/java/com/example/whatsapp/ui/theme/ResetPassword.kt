@@ -116,6 +116,7 @@ fun resetPassword(navController: NavController, vm: CViewModel) {
                 ConditionRow(condition = "Minimum 1 numeric character", check = passwordChecker().checkNumberOfDigit(passwordState.value.text))
                 ConditionRow(condition = "Minimum 1 special character", check = passwordChecker().checkSymbol(passwordState.value.text))
                 ConditionRow(condition = "Must not has space character", check = passwordChecker().checkSpaces(passwordState.value.text))
+                Log.e(passwordState.value.text,passwordState.value.text)
             }
         }
     }

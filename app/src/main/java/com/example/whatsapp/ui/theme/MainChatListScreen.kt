@@ -33,14 +33,14 @@ import com.example.whatsapp.TitleText
 import com.example.whatsapp.navigateTo
 import com.example.whatsapp.ui.theme.BottomNavigation
 import com.example.whatsapp.ui.theme.BottomNavigationMenu
-import com.example.whatsapp.ui.theme.CommonProgressSpinner
-
+//import com.example.whatsapp.ui.theme.CommonProgressSpinner
+//COMMON PRGRES SPINNER I YAZ
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatListScreen(navController: NavController, vm: CViewModel) {
     val inProgress = vm.inProgressChats.value
     if (inProgress)
-        CommonProgressSpinner()
+        //CommonProgressSpinner()
     else {
         val chats = vm.chats.value
         val userData = vm.userData.value

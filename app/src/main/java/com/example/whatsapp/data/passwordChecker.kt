@@ -8,8 +8,8 @@ public class passwordChecker(){
     private val atLeastOneUpperCase = Pattern.compile(".*[A-Z]")
     private val atLeastOneLowerCase = Pattern.compile(".*[a-z]")
     private val noSpace = Pattern.compile(" ")
-    private val atLeastEightChar = Pattern.compile(".*[@#$%^&+-=?*]")
-    private val atLeastOneSymbol = Pattern.compile(".{8,}")
+    private val atLeastOneSymbol = Pattern.compile(".*[@#$%^&+-=?*]")
+    private val atLeastEightChar = Pattern.compile(".{8,}")
 
    public fun checkNumberOfDigit(password:String): Boolean {
        return password.matches(atLeastOneDigit.toRegex())
@@ -19,7 +19,19 @@ public class passwordChecker(){
     }
 
     public fun checkLowerCase(password:String): Boolean {
-        return password.matches(atLeastOneLowerCase.toRegex())
+        try {
+            var state:Boolean = false
+            if(password.toCharArray().iterator().nextChar().isLowerCase()) {
+                state = true
+                return state
+            }
+                return state
+        }catch (e: Exception){
+            return false
+        }
+
+
+       // return password.matches(atLeastOneLowerCase.toRegex())
     }
 
     public fun checkSpaces(password:String): Boolean {

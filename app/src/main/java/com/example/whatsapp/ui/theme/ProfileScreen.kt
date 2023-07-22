@@ -36,7 +36,7 @@ import kotlin.math.log
 fun profileScreen (navController: NavController, vm:CViewModel){
     val inProgress = vm.inProgress.value
     if (inProgress)
-        CommonProgressSpinner()
+       // CommonProgressSpinner()
     else{
         val userData = vm.userData.value
         var name by rememberSaveable{ mutableStateOf(userData?.name ?:"") }
@@ -66,7 +66,7 @@ fun profileScreen (navController: NavController, vm:CViewModel){
                 onLogout = {
                     vm.onLogout()
                   //  focus.clearFocus(force = true)
-                    navigateTo(navController,DestinationScreen.ChatListScreen.route)
+                    navigateTo(navController,DestinationScreen.Login.route)
                 }
             )
 
@@ -80,11 +80,13 @@ fun profileScreen (navController: NavController, vm:CViewModel){
         }
         }
 }
-
+/*
 @Composable
 fun CommonProgressSpinner() {
     TODO("Not yet implemented")
 }
+
+ */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

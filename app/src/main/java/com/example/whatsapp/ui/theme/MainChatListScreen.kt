@@ -52,11 +52,9 @@ fun ChatListScreen(navController: NavController, vm: CViewModel) {
             vm.onAddChat(it)
             showDialog.value = false
         }
-
         Scaffold(
             floatingActionButton = { FAB(showDialog.value, onFabClick, onDismiss, onAddChat) },
             content = {
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()

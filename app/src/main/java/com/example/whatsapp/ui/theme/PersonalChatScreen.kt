@@ -60,26 +60,19 @@ fun personalChatScreen (navController: NavController, vm: CViewModel, chatId: St
         reply = ""
     }
     val chatMessages = vm.chatMessages
-
     Column(modifier = Modifier.fillMaxSize()) {
-        // Chat header
         ChatHeader(name = chatUser.name ?: "", imageUrl = chatUser.imageUrl ?: "") {
             navController.popBackStack()
             vm.depopulateChat()
         }
-
-        // Messages
         Messages(
             modifier = Modifier.weight(1f),
             chatMessages = chatMessages.value,
             currentUserId = myId?.userId ?: ""
         )
-
-        // Reply box
         ReplyBox(reply = reply, onReplyChange = { reply = it }, onSendReply = onSendReply)
     }
 }
-
 @Composable
 fun ChatHeader(name: String, imageUrl: String, onBackClicked: () -> Unit) {
     Row(
@@ -110,7 +103,6 @@ fun ChatHeader(name: String, imageUrl: String, onBackClicked: () -> Unit) {
     }
     CommonDivider()
 }
-
 @Composable
 fun Messages(modifier: Modifier, chatMessages: List<Message>, currentUserId: String) {
     LazyColumn(modifier = modifier) {
@@ -141,7 +133,6 @@ fun Messages(modifier: Modifier, chatMessages: List<Message>, currentUserId: Str
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReplyBox(reply: String, onReplyChange: (String) -> Unit, onSendReply: () -> Unit) {

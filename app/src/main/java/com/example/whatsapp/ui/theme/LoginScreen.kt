@@ -104,7 +104,7 @@ fun loginScreen(navController:NavController, vm:CViewModel){
                 },
                 modifier = Modifier.padding(8.dp),
                 label = { Text(text = "password") },
-                visualTransformation = PasswordVisualTransformation()
+                visualTransformation = PasswordVisualTransformation() // koşullu yap
             )
             Button(
                 onClick = {

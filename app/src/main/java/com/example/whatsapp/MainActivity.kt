@@ -1,5 +1,6 @@
 package com.example.whatsapp
 
+import com.example.whatsapp.ui.theme.NotificationsScreen
 import ChatListScreen
 import StatusListScreen
 import StatusScreen
@@ -40,6 +41,7 @@ sealed class DestinationScreen(val route: String){
     }
     object  SettingsScreen : DestinationScreen("SettingsScreen")
     object StatusListScreen : DestinationScreen("StatusListScreen")
+    object NotificationsScreen : DestinationScreen("NotificationsScreen")
     object PersonalChat : DestinationScreen("PersonalChat/{chatId}"){
         fun createRoute(id:String) = "PersonalChat/$id"
     }
@@ -62,7 +64,7 @@ fun ChatAppNavigation() {
     val navController = rememberNavController()
     val vm = hiltViewModel<CViewModel>()
     
-    NavHost(navController = navController , startDestination =  DestinationScreen.Login.route){
+    NavHost(navController = navController , startDestination =  DestinationScreen.ProfileScreen.route){
         composable(DestinationScreen.Signup.route){
             SignupScreen(navController, vm)
         }
@@ -81,6 +83,9 @@ fun ChatAppNavigation() {
         }
         composable(DestinationScreen.ChatListScreen.route){
             ChatListScreen(navController = navController, vm = vm)
+        }
+        composable(DestinationScreen.NotificationsScreen.route){
+            NotificationsScreen(navController = navController, vm = vm)
         }
         composable(DestinationScreen.SettingsScreen.route){
             settingsScreen(navController = navController, vm = vm)

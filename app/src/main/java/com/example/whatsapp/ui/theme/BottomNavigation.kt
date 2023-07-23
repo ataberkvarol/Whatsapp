@@ -51,10 +51,8 @@ fun BottomNavigationMenu(selectedItem:BottomNavigation, navController: NavContro
                     .weight(1f)
                     .clickable {
                                navigateTo(navController,item.navDestination.route)
-
                     },
             )
         }
-
     }
 }

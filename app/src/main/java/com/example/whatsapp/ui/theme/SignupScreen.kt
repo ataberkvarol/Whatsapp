@@ -124,8 +124,6 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
                 label = { Text(text = "password") },
                 visualTransformation = PasswordVisualTransformation()
             )
-
-
             Button(
                 onClick = {
                     focus.clearFocus(force = true)
@@ -147,13 +145,10 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
                     .clickable {
                         navigateTo(navController, DestinationScreen.Login.route)
                     })
-
-
             val isLoading = vm.inProgress.value
             if (isLoading){
                 CircularProgressIndicator()
             }
-
         }
     }
 }

@@ -62,21 +62,16 @@ fun profileScreen (navController: NavController, vm:CViewModel){
                     focus.clearFocus(force = true)
                     navigateTo(navController,DestinationScreen.ChatListScreen.route)
                 },
-
                 onLogout = {
                     vm.onLogout()
                   //  focus.clearFocus(force = true)
                     navigateTo(navController,DestinationScreen.Login.route)
                 }
             )
-
-
             BottomNavigationMenu(
                 selectedItem = BottomNavigation.PROFILE,
                 navController = navController
             )
-
-
         }
         }
 }
@@ -102,12 +97,10 @@ fun ProfileContent(modifier:Modifier, vm:CViewModel,name:String,number:String,on
         ) {
             Text(text = "Back", modifier = Modifier.clickable { onBack.invoke() })
             Text(text = "Save", modifier = Modifier.clickable { onSave.invoke() })
-
         }
         CommonDivider()
        // ProfileImage()
         CommonDivider()
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -117,10 +110,7 @@ fun ProfileContent(modifier:Modifier, vm:CViewModel,name:String,number:String,on
             Text(text = "Name", modifier = Modifier.width(100.dp))
             TextField(value = name, onValueChange = onNameChange)
         }
-
     }
-
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,9 +119,7 @@ fun ProfileContent(modifier:Modifier, vm:CViewModel,name:String,number:String,on
         Text(text = "Name", modifier = Modifier.width(100.dp))
         TextField(value = number, onValueChange = onNumberChange)
     }
-
     CommonDivider()
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -140,9 +128,7 @@ fun ProfileContent(modifier:Modifier, vm:CViewModel,name:String,number:String,on
     ) {
         Text(text = "logout", modifier = Modifier.clickable { onLogout.invoke() })
     }
-
     @Composable
     fun ProfileImage() {
-
     }
 }

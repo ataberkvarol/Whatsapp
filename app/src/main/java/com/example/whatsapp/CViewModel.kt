@@ -227,14 +227,19 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
         )
         db.collection(COLLECTION_STATUS).document().set(newStatus)
     }
-    private fun uploadProfileImage(uri: Uri) {
+    fun uploadProfileImage(uri: Uri) {
        uploadImage(uri){
            createOrUpdateProfile(imageUrl = "url")//fixme
        }
     }
-    private fun uploadImage(uri: Uri, function: () -> Unit) {
+     fun uploadImage(uri: Uri, function: () -> Unit) {
         TODO("Not yet implemented")
     }
+
+    fun updateProfileData(name: String,number: String){
+        createOrUpdateProfile(name, number)
+    }
+
     fun onAddChat(number: String){
         if (number.isEmpty() || !number.isDigitsOnly())
             handleException(customMessage = "number must contain only digits")

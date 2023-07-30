@@ -24,12 +24,12 @@ import com.example.whatsapp.ui.theme.SignupScreen
 import com.example.whatsapp.ui.theme.WhatsappTheme
 import com.example.whatsapp.ui.theme.loginScreen
 import com.example.whatsapp.ui.theme.personalChatScreen
-import com.example.whatsapp.ui.theme.profileScreen
+import com.example.whatsapp.ui.theme.ProfileScreen
 import com.example.whatsapp.ui.theme.resetPassword
 import com.example.whatsapp.ui.theme.settingsScreen
 import dagger.hilt.android.AndroidEntryPoint
 
-
+/*TODO: status ekranını düzenle */
 sealed class DestinationScreen(val route: String){
 
     object Signup : DestinationScreen("signup")
@@ -77,7 +77,7 @@ fun ChatAppNavigation() {
 
         }
         composable(DestinationScreen.ProfileScreen.route){
-            profileScreen( navController, vm)
+            ProfileScreen( navController, vm)
         }
         composable(DestinationScreen.StatusListScreen.route){
             StatusListScreen(navController = navController, vm = vm)

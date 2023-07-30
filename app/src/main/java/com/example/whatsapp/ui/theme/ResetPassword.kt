@@ -1,8 +1,10 @@
 package com.example.whatsapp.ui.theme
 
+import android.annotation.SuppressLint
 import android.graphics.fonts.FontFamily
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -39,9 +43,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
 import com.example.whatsapp.DestinationScreen
+import com.example.whatsapp.R
 import com.example.whatsapp.data.passwordChecker
 import com.example.whatsapp.navigateTo
 
+@SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun resetPassword(navController: NavController, vm: CViewModel) {
@@ -59,16 +65,30 @@ fun resetPassword(navController: NavController, vm: CViewModel) {
             val emailState = remember { mutableStateOf(TextFieldValue()) }
             val passwordState = remember { mutableStateOf(TextFieldValue()) }
             val focus = LocalFocusManager.current
+            val context = LocalContext.current
+
+            /*
             Text(
                 text = "Reset Password",
                 modifier = Modifier.padding(8.dp),
                 fontSize = 30.sp,
             )
+             */
+            Image(
+                painter = painterResource(id = R.raw.logo2),
+                contentDescription = null,
+                modifier = Modifier
+                    .width(200.dp)
+                    .padding(8.dp)
+            )
+
+
             OutlinedTextField(
                 value = emailState.value,
                 singleLine = true,
                 shape = RoundedCornerShape(50),
                 placeholder = { Text(text = "Enter your email") },
+                leadingIcon = { Icon(painter = painterResource(id = R.drawable.baseline_email_24), contentDescription = null)},
                 onValueChange = {
                     if (it.text.length <= MaxLength)
                         emailState.value = it
@@ -81,6 +101,7 @@ fun resetPassword(navController: NavController, vm: CViewModel) {
                 singleLine = true,
                 shape = RoundedCornerShape(50),
                 placeholder = { Text(text = "Enter your password") },
+                leadingIcon = { Icon(painter =painterResource(id = R.drawable.baseline_password_24), contentDescription = null)},
                 onValueChange = {
                     if (it.text.length <= MaxLength)
                         passwordState.value = it
@@ -92,10 +113,14 @@ fun resetPassword(navController: NavController, vm: CViewModel) {
             Button(
                 onClick = {
                     focus.clearFocus(force = true)
-                    vm.onLogin(
+                    var wasReset = vm.onLogin(
                         emailState.value.text,
                         passwordState.value.text
                     )
+                    if(wasReset){
+                        navigateTo(navController,DestinationScreen.Login.route)
+                    }else
+                        ShowToast(context,"Reset was failed")
                 },
                 modifier = Modifier.padding(8.dp)
             ) {

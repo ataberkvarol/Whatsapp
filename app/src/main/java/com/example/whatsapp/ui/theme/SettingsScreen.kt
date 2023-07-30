@@ -1,7 +1,25 @@
 package com.example.whatsapp.ui.theme
 
 import android.annotation.SuppressLint
+import android.preference.PreferenceManager
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,8 +67,12 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import com.example.whatsapp.DestinationScreen
 
 /*
@@ -61,6 +83,8 @@ object DarkModePreferenceKeys {
 }
 
 */
+private const val PREF_DARK_THEME = "pref_dark_theme"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -68,10 +92,11 @@ fun settingsScreen(navController: NavController, vm: CViewModel) {
 
     var isSearched by remember { mutableStateOf(false) }
     var tf by remember { mutableStateOf(TextFieldValue("")) } // by olunca bir dahdeğiştiremiyorsun va gibi oluyor
+    //var switchState by rememberSaveable { mutableStateOf(({ false })()) }
     var switchState = remember { mutableStateOf(false) }
+    Log.e("switchState", switchState.toString())
     var details = remember { mutableStateOf(false) }
     Log.e(isSearched.toString(),isSearched.toString())
-
     MyAppTheme(isDarkTheme = switchState.value) {
         Scaffold(
             topBar = {
@@ -175,6 +200,7 @@ private val ITEMS = listOf(
     Item(2, "Dark Mode"),
     Item(3, "Item 3"),
 )
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ItemView(
     item: Item, switchState: MutableState<Boolean>,
@@ -203,8 +229,20 @@ fun ItemView(
                 if (details.value == true){
                     Log.e("details","details:true")
                     if (navController != null) {
+                        var visible by remember { mutableStateOf(true) }
                         Log.e("notification","notification:true")
-                        navController.navigate(DestinationScreen.NotificationsScreen.route)
+                        AnimatedVisibility(
+                            visible = visible,
+                            enter = slideInVertically(
+                                initialOffsetY = { -40 }
+                            ) + expandVertically(
+                                expandFrom = Alignment.Top
+                            ) + scaleIn(
+                                transformOrigin = TransformOrigin(0.5f, 0f)
+                            ) + fadeIn(initialAlpha = 0.3f),
+                            exit = slideOutVertically() + shrinkVertically() + fadeOut() + scaleOut(targetScale = 1.2f)
+                        ){
+                        navController.navigate(DestinationScreen.NotificationsScreen.route)}
                     }
                 }
             }
@@ -234,10 +272,31 @@ fun MyAppTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = if (isDarkTheme) darkColorScheme() else lightColorScheme()
+    val context = LocalContext.current
+    val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    // isDarkTheme = sharedPreferences.getBoolean(PREF_DARK_THEME, false)
+    val colorScheme =
+        if (isDarkTheme) {
+            darkColorScheme()
+        } else{
+            lightColorScheme()
+    }
     Log.e(isDarkTheme.toString(), isDarkTheme.toString())
+    sharedPreferences.edit {
+        putBoolean(PREF_DARK_THEME, isDarkTheme)
+    }
     MaterialTheme(
         colorScheme = colorScheme,
         content = content
     )
 }
+/*
+@Composable
+fun slideInVertically(
+    animationSpec: FiniteAnimationSpec<IntOffset> = spring(
+        stiffness = Spring.StiffnessMediumLow,
+        visibilityThreshold = IntOffset.VisibilityThreshold
+    ),
+    initialOffsetY: (fullHeight: Int) -> Int = { -it / 2 }
+): EnterTransition{}
+ */

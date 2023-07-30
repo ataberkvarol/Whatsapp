@@ -41,6 +41,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
     val inProgress = mutableStateOf(false)
     val popUpNotification = mutableStateOf<com.example.whatsapp.data.Event<String>?>(null)
     val signedIn = mutableStateOf(false)
+    val signedUp = mutableStateOf(false)
     val userData = mutableStateOf<UserData?>(null)
 
 
@@ -66,10 +67,10 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
     }
 
     @SuppressLint("SuspiciousIndentation")
-    fun signUp(name: String, number: String, email: String, password: String) {
+    fun signUp(name: String, number: String, email: String, password: String):Boolean {
         if (name.isBlank() || number.isBlank() || email.isBlank() || password.isBlank()) {
             handleException(customMessage = "please fill the required fields")
-            return
+            return false
         }
         inProgress.value = true
         db.collection(com.example.whatsapp.data.COLLECTON_USER).whereEqualTo("number", number).get()
@@ -78,19 +79,26 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                signedIn.value = true
+                                signedUp.value = true
                                 createOrUpdateProfile(name = name, number = number)
-                            } else
+                            } else {
                                 handleException(customMessage = "signIn failed")
+                                signedUp.value = false
+                            }
                         }
-                } else
+                } else {
                     inProgress.value = false
-                handleException(customMessage = "number already exists")
-
+                    signedUp.value = false
+                    handleException(customMessage = "number already exists")
+                }
             }.addOnFailureListener {
             handleException(it)
         }
-
+        if (signedUp.value){
+            return true
+        }else{
+            return false
+        }
     }
 
     private fun handleException(exception: Exception? = null, customMessage: String = "") {
@@ -131,7 +139,6 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
     fun onLogin(email: String, password: String):Boolean {
         Log.e("Model"+password,"Model"+password)
            if (!email.isBlank() || !password.isBlank()) {
-
                inProgress.value = true
                auth.signInWithEmailAndPassword(email, password)
                    .addOnCompleteListener { task ->

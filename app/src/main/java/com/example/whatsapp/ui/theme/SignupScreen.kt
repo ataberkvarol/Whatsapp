@@ -1,5 +1,7 @@
 package com.example.whatsapp.ui.theme
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -17,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,10 +46,12 @@ import com.example.whatsapp.DestinationScreen
 import com.example.whatsapp.R
 import com.example.whatsapp.navigateTo
 
+@SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen (navController:NavController,vm:CViewModel) {
     val MaxLength = 30
+    var isSignedIn = false
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -64,18 +69,31 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
             val passwordState = remember { mutableStateOf(TextFieldValue()) }
             var name by remember { mutableStateOf(TextFieldValue("")) }
             val focus = LocalFocusManager.current
+            val context = LocalContext.current
 
+
+            Image(
+                painter = painterResource(id = R.raw.logo2),
+                contentDescription = null,
+                modifier = Modifier
+                    .width(200.dp)
+                    .padding(8.dp)
+            )
+            /*
             Text(
                 text = "Sign Up",
                 modifier = Modifier.padding(8.dp),
                 fontSize = 30.sp,
                 fontFamily = FontFamily.Default
             )
+
+             */
             OutlinedTextField(
                 value = nameState.value,
                 singleLine = true,
                 shape = RoundedCornerShape(50),
                 placeholder = { Text(text = "Enter your name")},
+                leadingIcon = { Icon(painter =painterResource(id = R.drawable.person_profile), contentDescription = null) },
                 onValueChange = {
                    // Log.e(it.text.length.toString(),it.text.length.toString())
                     if (it.text.length <= MaxLength )
@@ -89,6 +107,7 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
                 singleLine = true,
                 shape = RoundedCornerShape(50),
                 placeholder = { Text(text = "Enter your phone number")},
+                leadingIcon = { Icon(painter =painterResource(id = R.drawable.baseline_phone_24), contentDescription = null)},
                 onValueChange = {
                     // Log.e(it.text.length.toString(),it.text.length.toString())
                     if (it.text.length <= MaxLength )
@@ -102,6 +121,7 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
                 singleLine = true,
                 shape = RoundedCornerShape(50),
                 placeholder = { Text(text = "Enter your email")},
+                leadingIcon = { Icon(painter =painterResource(id = R.drawable.baseline_email_24), contentDescription = null)},
                 onValueChange = {
                     // Log.e(it.text.length.toString(),it.text.length.toString())
                     if (it.text.length <= MaxLength )
@@ -115,6 +135,7 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
                 singleLine = true,
                 shape = RoundedCornerShape(50),
                 placeholder = { Text(text = "Enter your password")},
+                leadingIcon = { Icon(painter =painterResource(id = R.drawable.baseline_password_24), contentDescription = null)},
                 onValueChange = {
                     // Log.e(it.text.length.toString(),it.text.length.toString())
                     if (it.text.length <= MaxLength )
@@ -127,16 +148,20 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
             Button(
                 onClick = {
                     focus.clearFocus(force = true)
-                    vm.signUp(
-                        nameState.value.text ,
-                        numberState.value.text,
-                        emailState.value.text,
-                        passwordState.value.text
-                    )
+                    var isSignedUp = vm.signUp(
+                       nameState.value.text ,
+                       numberState.value.text,
+                       emailState.value.text,
+                       passwordState.value.text
+                   )
+                    if(isSignedUp){
+                        navigateTo(navController,DestinationScreen.Login.route)
+                    }else
+                        ShowToast(context,"Sign up was failed")
                 },
                 modifier = Modifier.padding(8.dp)
             ) {
-                Text(text = "SIGN IN")
+                Text(text = "SIGN UP")
             }
             Text(text = "already have a user go to login screen",
                 color = Color.Blue,

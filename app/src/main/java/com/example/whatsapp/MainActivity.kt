@@ -4,6 +4,7 @@ import com.example.whatsapp.ui.theme.NotificationsScreen
 import ChatListScreen
 import StatusListScreen
 import StatusScreen
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -69,7 +70,7 @@ fun ChatAppNavigation() {
             SignupScreen(navController, vm)
         }
         composable(DestinationScreen.Login.route){
-            loginScreen( navController,vm )
+            loginScreen( navController,vm , videoUri = Uri.parse(R.raw.clouds.toString()))
         }
         composable(DestinationScreen.ResetPasswordScreen.route){
             resetPassword(navController = navController, vm = vm)

@@ -24,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
@@ -43,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -84,10 +86,17 @@ fun loginScreen(navController:NavController, vm:CViewModel,videoUri:Uri){
 
             val emailState = remember { mutableStateOf(TextFieldValue()) }
             val passwordState = remember { mutableStateOf(TextFieldValue()) }
+            var passwordVisibility by remember{ mutableStateOf(false) }
             var name by remember { mutableStateOf(TextFieldValue("")) }
             val exoPlayer = remember { context.buildExoPlayer(uri = videoUri) }
             val context = LocalContext.current
             val focus = LocalFocusManager.current
+
+            val icon = if (passwordVisibility)
+                painterResource(id = R.drawable.baseline_visibility_24)
+            else
+                painterResource(id = R.drawable.baseline_visibility_off_24)
+
 
             DisposableEffect(
                 AndroidView(
@@ -134,17 +143,24 @@ fun loginScreen(navController:NavController, vm:CViewModel,videoUri:Uri){
             OutlinedTextField(
                 value = passwordState.value,
                 singleLine = true,
-                leadingIcon = { Icon(painter =painterResource(id = R.drawable.baseline_password_24), contentDescription = null)},
+                leadingIcon = { Icon(painter = painterResource(id = R.drawable.baseline_password_24), contentDescription = null) },
                 shape = RoundedCornerShape(50),
-                placeholder = { Text(text = "Enter your password")},
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                        Icon(painter = icon, contentDescription = "qwe")
+                    }
+                },
+                placeholder = { Text(text = "Enter your password") },
                 onValueChange = {
-                    // Log.e(it.text.length.toString(),it.text.length.toString())
-                    if (it.text.length <= MaxLength )
+                    // Log.e(it.text.length.toString(), it.text.length.toString())
+                    if (it.text.length <= MaxLength) {
                         passwordState.value = it
+                    }
                 },
                 modifier = Modifier.padding(8.dp),
                 label = { Text(text = "password") },
-                visualTransformation = PasswordVisualTransformation() // koşullu yap
+                visualTransformation = if (passwordVisibility) VisualTransformation.None
+                else PasswordVisualTransformation()
             )
             Button(
                 onClick = {

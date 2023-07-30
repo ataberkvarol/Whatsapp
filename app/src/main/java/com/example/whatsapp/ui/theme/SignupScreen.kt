@@ -20,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -67,10 +69,15 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
             val numberState = remember { mutableStateOf(TextFieldValue()) }
             val emailState = remember { mutableStateOf(TextFieldValue()) }
             val passwordState = remember { mutableStateOf(TextFieldValue()) }
+            var passwordVisibility by remember{ mutableStateOf(false) }
             var name by remember { mutableStateOf(TextFieldValue("")) }
             val focus = LocalFocusManager.current
             val context = LocalContext.current
 
+            val icon = if (passwordVisibility)
+                painterResource(id = R.drawable.baseline_visibility_24)
+            else
+                painterResource(id = R.drawable.baseline_visibility_off_24)
 
             Image(
                 painter = painterResource(id = R.raw.logo2),
@@ -142,8 +149,14 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
                         passwordState.value = it
                 },
                 modifier = Modifier.padding(8.dp),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                        Icon(painter = icon, contentDescription = "qwe")
+                    }
+                },
                 label = { Text(text = "password") },
-                visualTransformation = PasswordVisualTransformation()
+                visualTransformation = if (passwordVisibility) VisualTransformation.None
+                else PasswordVisualTransformation()
             )
             Button(
                 onClick = {

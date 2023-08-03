@@ -19,9 +19,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
@@ -36,6 +41,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
@@ -45,6 +52,7 @@ import com.example.whatsapp.DestinationScreen
 import com.example.whatsapp.navigateTo
 import kotlin.math.log
 import com.example.whatsapp.CommonProcessSpinner
+import com.example.whatsapp.R
 
 /*TODO: status ekranını için düzenleme yap */
 @Composable
@@ -70,7 +78,7 @@ fun ProfileScreen(navController: NavController, vm: CViewModel) {
                 vm = vm,
                 name = name,
                 number = number,
-                // status = status,
+                //status = status,
                 onNameChange = { name = it },
                 onNumberChange = { number = it },
                 // onStatusChange = { status = it },
@@ -119,8 +127,20 @@ fun ProfileContent(
                 .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Back", modifier = Modifier.clickable { onBack.invoke() })
-            Text(text = "Save", modifier = Modifier.clickable { onSave.invoke() })
+            Button(
+                onClick = {
+                    onBack.invoke()
+                },
+            ) {
+                Text(text = "Back")
+            }
+            Button(
+                onClick = {
+                    onSave.invoke()
+                },
+            ) {
+                Text(text = "Save")
+            }
         }
 
         CommonDivider()
@@ -133,36 +153,47 @@ fun ProfileContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Name", modifier = Modifier.width(100.dp))
-            TextField(
+            OutlinedTextField(
+
                 value = name,
                 onValueChange = onNameChange,
+                singleLine = true,
+                shape = RoundedCornerShape(50),
+                leadingIcon = { Icon(painter = painterResource(id = R.drawable.person_profile), contentDescription = null) },
+                placeholder = { Text(text = "Enter your name")},
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 colors = TextFieldDefaults.textFieldColors(
                     textColor = Color.Black,
                     containerColor = Color.Transparent
-                )
-            )
+                ),
+                label = { Text(text = "Name",modifier = Modifier.width(100.dp)) })
         }
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Number", modifier = Modifier.width(100.dp))
-            TextField(
+
+            OutlinedTextField(
                 value = number,
                 onValueChange = onNumberChange,
+                singleLine = true,
+                shape = RoundedCornerShape(50),
+                leadingIcon = { Icon(painter = painterResource(id = R.drawable.baseline_phone_24), contentDescription = null) },
+                placeholder = { Text(text = "Enter your phone number")},
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = TextFieldDefaults.textFieldColors(
                     textColor = Color.Black,
                     containerColor = Color.Transparent
-                )
-            )
+                ) ,
+                label = { Text(text = "Phone number",modifier = Modifier.width(100.dp)) })
         }
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -194,9 +225,14 @@ fun ProfileContent(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Logout", modifier = Modifier.clickable { onLogout.invoke() })
+            Button(
+                onClick = {
+                    onLogout.invoke()
+                },
+            ) {
+                Text(text = "LOG OUT")
+            }
         }
-
     }
 }
 

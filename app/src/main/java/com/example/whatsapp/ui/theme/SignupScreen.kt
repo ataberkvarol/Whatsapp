@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -37,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
@@ -100,6 +102,7 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
                 singleLine = true,
                 shape = RoundedCornerShape(50),
                 placeholder = { Text(text = "Enter your name")},
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 leadingIcon = { Icon(painter =painterResource(id = R.drawable.person_profile), contentDescription = null) },
                 onValueChange = {
                    // Log.e(it.text.length.toString(),it.text.length.toString())
@@ -114,6 +117,7 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
                 singleLine = true,
                 shape = RoundedCornerShape(50),
                 placeholder = { Text(text = "Enter your phone number")},
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 leadingIcon = { Icon(painter =painterResource(id = R.drawable.baseline_phone_24), contentDescription = null)},
                 onValueChange = {
                     // Log.e(it.text.length.toString(),it.text.length.toString())

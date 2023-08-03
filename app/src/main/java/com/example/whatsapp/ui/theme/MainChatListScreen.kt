@@ -153,6 +153,7 @@ fun FAB(
                 OutlinedTextField(
                     value = addChatNumber.value,
                     onValueChange = { addChatNumber.value = it },
+                    placeholder = { Text(text = "Enter phone number") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             }

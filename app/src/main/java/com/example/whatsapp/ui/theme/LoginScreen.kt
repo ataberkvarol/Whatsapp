@@ -186,6 +186,15 @@ fun loginScreen(navController:NavController, vm:CViewModel,videoUri:Uri){
                     .clickable {
                         navigateTo(navController, DestinationScreen.Signup.route)
                     })
+
+            Text(text = "Forgot my email",
+                color = Color.Blue,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clickable {
+                        navigateTo(navController, DestinationScreen.ResetEmailScreen.route)
+                    })
+
             Text(text = "Forgot my password",
                 color = Color.Blue,
                 modifier = Modifier

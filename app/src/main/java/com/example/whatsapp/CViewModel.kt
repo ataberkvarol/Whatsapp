@@ -33,6 +33,9 @@ import com.google.firebase.firestore.ktx.toObjects
 import java.util.Calendar
 import java.util.UUID
 import com.example.whatsapp.data.Status
+import com.google.firebase.auth.FirebaseAuthRegistrar
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 @HiltViewModel
 class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFirestore, val storage: FirebaseStorage):ViewModel() {
@@ -41,6 +44,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
     val inProgress = mutableStateOf(false)
     val popUpNotification = mutableStateOf<com.example.whatsapp.data.Event<String>?>(null)
     val signedIn = mutableStateOf(false)
+    val resetPassword = mutableStateOf(false)
     val signedUp = mutableStateOf(false)
     val userData = mutableStateOf<UserData?>(null)
     // chat
@@ -136,28 +140,87 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
         }
     }
     fun onLogin(email: String, password: String):Boolean {
-        Log.e("Model"+password,"Model"+password)
-           if (!email.isBlank() || !password.isBlank()) {
-               inProgress.value = true
-               auth.signInWithEmailAndPassword(email, password)
-                   .addOnCompleteListener { task ->
-                       if (task.isSuccessful) {
-                           signedIn.value = true
-                           inProgress.value = false
-                           auth.currentUser?.uid?.let { getUserData(it) }
-                       } else {
-                           handleException(task.exception, "login failed")
-                           Log.e("error", task.exception.toString())
-                       }
-                   }.addOnFailureListener { handleException(it, "login failed") }
-                    if(signedIn.value == true) {
-                        return true
-                    }else
-                        return false
-           } else {
-        handleException(customMessage = "please fill the required fields")
-        Log.e("error", "please fill the required fields")
-               return false
+        Log.e("Model" + password, "Model" + password)
+        if (!email.isBlank() || !password.isBlank()) {
+            inProgress.value = true
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        signedIn.value = true
+                        inProgress.value = false
+                        auth.currentUser?.uid?.let { getUserData(it) }
+
+                    } else {
+                        handleException(task.exception, "login failed")
+                        Log.e("error", task.exception.toString())
+                    }
+                }.addOnFailureListener { handleException(it, "login failed") }
+            if (signedIn.value == true) {
+                return true
+            } else
+                return false
+        } else {
+            handleException(customMessage = "please fill the required fields")
+            Log.e("error", "please fill the required fields")
+            return false
+        }
+    }
+
+    fun onResetPassword(email: String, password: String):Boolean {
+        Log.e("Model" + password, "Model" + password)
+        if (!email.isBlank() || !password.isBlank()) {
+            inProgress.value = true
+            auth.confirmPasswordReset("123", password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.e("success" + password, "success")
+                        resetPassword.value = true
+                        inProgress.value = false
+                        auth.currentUser?.uid?.let { getUserData(it) }
+                    } else {
+                        handleException(task.exception, "reset password was failed")
+                        Log.e("error", task.exception.toString())
+                    }
+                }.addOnFailureListener { handleException(it, "reset password was failed") }
+            if (resetPassword.value == true) {
+                return true
+            } else
+                return false
+        } else {
+            handleException(customMessage = "please fill the required fields")
+            Log.e("error", "please fill the required fields")
+            return false
+        }
+    }
+
+
+    fun onResetEmail(password: String):Boolean {
+        /*
+        Log.e("Model" + password, "Model" + password)
+        if (!password.isBlank()) {
+            inProgress.value = true
+            auth.currentUse
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        signedIn.value = true
+                        inProgress.value = false
+                        auth.currentUser?.uid?.let { getUserData(it) }
+                    } else {
+                        handleException(task.exception, "login failed")
+                        Log.e("error", task.exception.toString())
+                    }
+                }.addOnFailureListener { handleException(it, "login failed") }
+            if (signedIn.value == true) {
+                return true
+            } else
+                return false
+        } else {
+            handleException(customMessage = "please fill the required fields")
+            Log.e("error", "please fill the required fields")
+            return false
+        }
+        */
+         return false
     }
 
 
@@ -189,7 +252,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                              */
 
 
-    }
+
     fun onLogout(){
         auth.signOut()
         signedIn.value = false

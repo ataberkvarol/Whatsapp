@@ -1,25 +1,11 @@
 package com.example.whatsapp.ui.theme
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.preference.PreferenceManager
 import android.util.Log
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VisibilityThreshold
-import androidx.compose.animation.core.spring
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -67,13 +51,13 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
-import com.example.whatsapp.DestinationScreen
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
 /*
 val Context.dataStore by preferencesDataStore(name = "settings")
@@ -85,18 +69,21 @@ object DarkModePreferenceKeys {
 */
 private const val PREF_DARK_THEME = "pref_dark_theme"
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun settingsScreen(navController: NavController, vm: CViewModel) {
 
     var isSearched by remember { mutableStateOf(false) }
+    var isClicked = remember { mutableStateOf(false) }
+   // val permissionState = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
     var tf by remember { mutableStateOf(TextFieldValue("")) } // by olunca bir dahdeğiştiremiyorsun va gibi oluyor
     //var switchState by rememberSaveable { mutableStateOf(({ false })()) }
     var switchState = remember { mutableStateOf(false) }
     Log.e("switchState", switchState.toString())
     var details = remember { mutableStateOf(false) }
     Log.e(isSearched.toString(),isSearched.toString())
+
     MyAppTheme(isDarkTheme = switchState.value) {
         Scaffold(
             topBar = {
@@ -184,7 +171,8 @@ fun settingsScreen(navController: NavController, vm: CViewModel) {
                         item = item ,
                         switchState = switchState,
                         details = details,
-                        navController =  navController
+                        navController =  navController,
+                        isClicked = isClicked
                     ) }
                 }
             },
@@ -200,13 +188,15 @@ private val ITEMS = listOf(
     Item(2, "Dark Mode"),
     Item(3, "Item 3"),
 )
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun ItemView(
     item: Item, switchState: MutableState<Boolean>,
     details:MutableState<Boolean>,
-    navController: NavController?
+    navController: NavController?,
+    isClicked: MutableState<Boolean>
 ) {
+    var permissionState = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -223,14 +213,23 @@ fun ItemView(
             )
             if (item.title == "Notifications"){
                 Spacer(modifier = Modifier.width(150.dp))
-                OutlinedButton(onClick = {details.value = true}) {
-                    Text(text = "Details")
+                Log.e("permission",permissionState.toString())
+                OutlinedButton(onClick = { isClicked.value = true }) {
+                    Text(text = "Allow")
+                    if (isClicked.value) {
+                        permissionState.launchPermissionRequest()
+                        Log.e("permission", "true")
+                        Log.e("permission", permissionState.status.isGranted.toString())
+                    }
                 }
+                /*
                 if (details.value == true){
                     Log.e("details","details:true")
+
                     if (navController != null) {
                         var visible by remember { mutableStateOf(true) }
                         Log.e("notification","notification:true")
+
                         AnimatedVisibility(
                             visible = visible,
                             enter = slideInVertically(
@@ -242,9 +241,14 @@ fun ItemView(
                             ) + fadeIn(initialAlpha = 0.3f),
                             exit = slideOutVertically() + shrinkVertically() + fadeOut() + scaleOut(targetScale = 1.2f)
                         ){
+
+
                         navController.navigate(DestinationScreen.NotificationsScreen.route)}
                     }
                 }
+                */
+
+
             }
             if(item.title == "Dark Mode" ){
                 Spacer(modifier = Modifier.width(190.dp))

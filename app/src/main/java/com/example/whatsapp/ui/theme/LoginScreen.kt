@@ -178,14 +178,6 @@ fun loginScreen(navController:NavController, vm:CViewModel,videoUri:Uri){
                 //modifier = Modifier.clickable{ navigateTo(navController,DestinationScreen.ProfileScreen.route) }
             ) {
                 Text(text = "LOG IN")
-                /*
-                if (!isSignedIn){
-                    Snackbar(){
-                        Text(text = "")
-                    }
-                }
-
-                 */
             }
             Text(text = "Register",
                 color = Color.Blue,

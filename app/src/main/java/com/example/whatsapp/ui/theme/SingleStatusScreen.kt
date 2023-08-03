@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
+import com.example.whatsapp.CommonImage
 import javax.net.ssl.SSLEngineResult
 
 enum class ProgressIndicatorState {
@@ -35,11 +36,11 @@ fun StatusScreen(navController: NavController, vm: CViewModel, userId: String) {
 
 
         Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
-            /*CommonImage(
+            CommonImage(
                 data = statuses[currentStatus.value].imageUrl,
-                modifier = Modifier.fillMaxSize(),  fixmeee
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit
-            ) */
+            )
             Row(modifier = Modifier.fillMaxWidth()) {
                 statuses.forEachIndexed { index, status ->
                     CustomProgressIndicator(
@@ -63,11 +64,6 @@ fun StatusScreen(navController: NavController, vm: CViewModel, userId: String) {
             }
         }
     }
-}
-
-@Composable
-fun CommonImage(data: Any, modifier: Modifier, contentScale: Any) {
-    TODO("Not yet implemented")
 }
 
 @Composable

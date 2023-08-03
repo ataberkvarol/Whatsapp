@@ -1,8 +1,8 @@
 package com.example.whatsapp
 
-import CommonImage
 import android.icu.text.CaseMap.Title
 import android.widget.AdapterView.OnItemClickListener
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -24,11 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ContentScale.Companion.Fit
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.ImagePainter
+import coil.compose.ImagePainter.State.Empty.painter
+import coil.compose.rememberImagePainter
 import com.google.android.gms.common.internal.service.Common
 
 fun navigateTo(navController: NavController,route:String){
@@ -40,7 +45,7 @@ fun navigateTo(navController: NavController,route:String){
 }
 
 @Composable
-fun commonProcessSpinner(){
+fun CommonProcessSpinner(){
     Row(modifier = Modifier
         .alpha(0.5f)
         .background(Color.LightGray)
@@ -88,6 +93,14 @@ fun TitleText(txt:String){
 
     )
 
+}
+@Composable
+fun CommonImage(data:String?,modifier: Modifier = Modifier.wrapContentSize(),contentScale: ContentScale = ContentScale.Crop){
+    val painter = rememberImagePainter(data = data)
+    Image(painter = painter, contentDescription = null, modifier = modifier, contentScale = contentScale)
+    if (painter.state is ImagePainter.State.Loading){
+        CommonProcessSpinner()
+    }
 }
 
 @Composable

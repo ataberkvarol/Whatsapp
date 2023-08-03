@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Edit
@@ -24,24 +25,27 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
 import com.example.whatsapp.CommonDivider
+import com.example.whatsapp.CommonProcessSpinner
+import com.example.whatsapp.CommonRow
 import com.example.whatsapp.DestinationScreen
 import com.example.whatsapp.TitleText
 import com.example.whatsapp.navigateTo
 import com.example.whatsapp.ui.theme.BottomNavigation
 import com.example.whatsapp.ui.theme.BottomNavigationMenu
-//import com.example.whatsapp.ui.theme.CommonProgressSpinner
+import com.example.whatsapp.data.Status
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatusListScreen(navController: NavController, vm: CViewModel) {
     val inProgress = vm.inProgressStatus.value
     if (inProgress)
-  //      CommonProgressSpinner()
+        CommonProcessSpinner()
     else {
         val statuses = vm.status.value
         val userData = vm.userData.value
-        val myStatuses = statuses.filter { it.equals(userData?.userId)}
-        val otherStatuses = statuses.filter { !it.equals(userData?.userId) }
+        val myStatuses = statuses.filter { it.user.userId == userData?.userId}
+        val otherStatuses = statuses.filter { it.user.userId != userData?.userId }
 
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent(),
@@ -74,19 +78,25 @@ fun StatusListScreen(navController: NavController, vm: CViewModel) {
                         ) {
                             Text(text = "No statuses available")
                         }
-                        /*
-                     //fix me
+
 
                     else {
+
                         if (myStatuses.isNotEmpty()) {
                             CommonRow(
-                                imageUrl = myStatuses[0].user.imageUrl,
+                                imageUrl = myStatuses[0].imageUrl,
                                 name = myStatuses[0].user.name
                             ) {
-                                navigateTo(
-                                    navController,
-                                    DestinationScreen.StatusScreen.createRoute(myStatuses[0].user?.userId)
-                                )
+                                myStatuses[0].user.userId?.let { it1 ->
+                                    DestinationScreen.StatusScreen.createRoute(
+                                        it1
+                                    )
+                                }?.let { it2 ->
+                                    navigateTo(
+                                        navController,
+                                        it2
+                                    )
+                                }
                             }
 
                             CommonDivider()
@@ -98,14 +108,20 @@ fun StatusListScreen(navController: NavController, vm: CViewModel) {
                                     imageUrl = user?.imageUrl,
                                     name = user?.name
                                 ) {
-                                    navigateTo(
-                                        navController,
-                                        DestinationScreen.Status.createRoute(user?.userId)
-                                    )
+                                    user.userId?.let { it1 ->
+                                        DestinationScreen.StatusScreen.createRoute(
+                                            it1
+                                        )
+                                    }?.let { it2 ->
+                                        navigateTo(
+                                            navController,
+                                            it2
+                                        )
+                                    }
                                 }
                             }
                         }
-                    } */  //fix me
+                    }
                     BottomNavigationMenu(
                         selectedItem = BottomNavigation.STATUSLIST,
                         navController = navController
@@ -116,12 +132,6 @@ fun StatusListScreen(navController: NavController, vm: CViewModel) {
         )
     }
 }
-
-@Composable
-fun CommonRow(imageUrl: Any, name: Any, function: () -> Unit) {
-    TODO("Not yet implemented")
-}
-
 @Composable
 fun FAB(onFabClick: () -> Unit) {
     FloatingActionButton(

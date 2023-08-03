@@ -1,6 +1,5 @@
 package com.example.whatsapp.ui.theme
 
-import CommonImage
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -34,21 +34,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
 import com.example.whatsapp.CommonDivider
+import com.example.whatsapp.CommonImage
 import com.example.whatsapp.DestinationScreen
 import com.example.whatsapp.navigateTo
 import kotlin.math.log
+import com.example.whatsapp.CommonProcessSpinner
 
 /*TODO: status ekranını için düzenleme yap */
 @Composable
 fun ProfileScreen(navController: NavController, vm: CViewModel) {
     val inProgress = vm.inProgress.value
     if (inProgress) {
-        //CommonProgressSpinner()
+        CommonProcessSpinner()
     } else {
         val userData = vm.userData.value
         var name by rememberSaveable { mutableStateOf(userData?.name ?: "") }
@@ -223,12 +226,10 @@ fun ProfileImage(imageUrl: String?, vm: CViewModel) {
                     .padding(8.dp)
                     .size(100.dp)
             ) {
-                /*
-                if (imageUrl != null) {
-                    CommonImage(data = imageUrl)
-                }
 
-                 */
+                if (imageUrl != null) {
+                    CommonImage(data = imageUrl, modifier = Modifier.wrapContentSize() , contentScale = ContentScale.Crop)
+                }
             }
             Text(text = "Change profile picture")
         }

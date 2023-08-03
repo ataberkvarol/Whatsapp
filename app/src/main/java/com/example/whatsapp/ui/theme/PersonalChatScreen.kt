@@ -1,6 +1,5 @@
 package com.example.whatsapp.ui.theme
 
-import CommonImage
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
 import com.example.whatsapp.CommonDivider
+import com.example.whatsapp.CommonImage
 import com.example.whatsapp.data.Message
 
 @Composable

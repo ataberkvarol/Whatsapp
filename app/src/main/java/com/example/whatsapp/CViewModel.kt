@@ -31,8 +31,8 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.firestore.ktx.toObjects
 import java.util.Calendar
-import javax.net.ssl.SSLEngineResult.Status
-
+import java.util.UUID
+import com.example.whatsapp.data.Status
 
 @HiltViewModel
 class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFirestore, val storage: FirebaseStorage):ViewModel() {
@@ -43,17 +43,16 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
     val signedIn = mutableStateOf(false)
     val signedUp = mutableStateOf(false)
     val userData = mutableStateOf<UserData?>(null)
-
-
     // chat
     val chats = mutableStateOf<List<ChatData>>(listOf())
     val inProgressChats = mutableStateOf(false)
     val chatMessages = mutableStateOf<List<Message>>(listOf())
     val inProgressMessageChats = mutableStateOf(false)
+    var currentChatMessagesListener: ListenerRegistration? = null
     // status screen
     val status = mutableStateOf<List<Status>>(listOf())
     val inProgressStatus = mutableStateOf(false)
-    var currentChatMessagesListener: ListenerRegistration? = null
+
 
     init {
         //onLogout()
@@ -210,7 +209,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                 userData.value = user
                 inProgress.value = false
                 populateStatuses()
-                //populateChat() fixme
+                populateChats()
             }
         }
     }
@@ -229,11 +228,24 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
     }
     fun uploadProfileImage(uri: Uri) {
        uploadImage(uri){
-           createOrUpdateProfile(imageUrl = "url")//fixme
+           createOrUpdateProfile(imageUrl = uri.toString())
        }
     }
      fun uploadImage(uri: Uri, function: () -> Unit) {
-        TODO("Not yet implemented")
+        inProgress.value = true
+         val storageRef = storage.reference
+         val uuid = UUID.randomUUID()
+         val imageRef = storageRef.child("image/$uuid")
+         val uploadTask = imageRef.putFile(uri)
+
+         uploadTask.addOnSuccessListener {
+             val result = it.metadata?.reference?.downloadUrl
+             result?.isSuccessful
+             inProgress.value = false
+         }
+             .addOnFailureListener{
+                 handleException(it)
+             }
     }
 
     fun updateProfileData(name: String,number: String){
@@ -288,9 +300,9 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                 }
         }
     }
-    fun  uploadStatus(imageUri:Uri){
+    fun uploadStatus(imageUri:Uri){
         uploadImage(imageUri){
-            createStatus(imageUrl = "url") // fixme
+            createStatus(imageUrl = imageUri.toString())
         }
     }
     fun populateStatuses(){
@@ -330,7 +342,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                 }
             }
     }
-    fun populateChat(chatId: String){
+    fun populateChats(){
         inProgressChats.value = true
        currentChatMessagesListener = db.collection(COLLECTION_CHAT).where(Filter.or(
             Filter.equalTo("user1.userId",userData.value?.userId),
@@ -344,6 +356,22 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                         .mapNotNull { it.toObject<Message>() }
                         .sortedBy { it.timestamp }
                 inProgressChats.value = false
+            }
+    }
+    fun populateChat(chatId: String){
+        inProgressMessageChats.value = true
+        db.collection(COLLECTION_CHAT)
+            .document(chatId)
+            .collection(COLLECTION_MESSAGES)
+            .addSnapshotListener { value, error ->
+                if (error != null){
+                    handleException(error)
+                }
+                if (value != null) {
+                chatMessages.value =
+                    value.documents.mapNotNull { it.toObject<Message>() }.sortedBy { it.timestamp }
+                inProgressMessageChats.value = false
+            }
             }
     }
 

@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
+import com.example.whatsapp.CommonProcessSpinner
+import com.example.whatsapp.CommonRow
 import com.example.whatsapp.DestinationScreen
 import com.example.whatsapp.R
 import com.example.whatsapp.TitleText
@@ -63,7 +65,7 @@ import com.example.whatsapp.ui.theme.BottomNavigationMenu
 fun ChatListScreen(navController: NavController, vm: CViewModel) {
     val inProgress = vm.inProgressChats.value
     if (inProgress)
-        //CommonProgressSpinner()
+        CommonProcessSpinner()
     else {
         val chats = vm.chats.value
         val userData = vm.userData.value
@@ -71,109 +73,34 @@ fun ChatListScreen(navController: NavController, vm: CViewModel) {
         val showDialog = remember { mutableStateOf(false) }
         val onFabClick: () -> Unit = { showDialog.value = true }
         val onDismiss: () -> Unit = { showDialog.value = false }
-        var isSearched by remember { mutableStateOf(false) }
-        var tf by remember { mutableStateOf(TextFieldValue("")) }
         val onAddChat: (String) -> Unit = {
             vm.onAddChat(it)
             showDialog.value = false
         }
+
         Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                            if (isSearched) {
-                                Log.e("if", "if")
-                                BasicTextField(
-                                    value = tf,
-                                    onValueChange = {
-                                        tf = it;if (it.text.isEmpty()) {
-                                        isSearched = false
-                                    }
-                                    },
-                                    textStyle = LocalTextStyle.current.copy(color = Color.Black),
-                                    singleLine = true,
-                                    decorationBox = { innerTextField ->
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.baseline_search_24),
-                                                contentDescription = "Search",
-                                                modifier = Modifier.size(24.dp)
-                                            )
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                            innerTextField()
-                                            Spacer(modifier = Modifier.width(154.dp))
-
-                                            Column(
-                                                horizontalAlignment = Alignment.End
-                                            ) {
-                                                IconButton(onClick = { isSearched = false })
-                                                {
-                                                    Icon(
-                                                        painter = painterResource(id = R.drawable.baseline_cancel_24),
-                                                        contentDescription = "test",
-                                                        modifier = Modifier.size(24.dp)
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                )
-                            } else {
-
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Start
-                                ) {
-                                    Text(
-                                        text = "Chats",
-                                        style = TextStyle(
-                                            fontSize = 35.sp,
-                                            fontWeight = FontWeight.ExtraBold
-                                        )
-                                    )
-                                    Spacer(modifier = Modifier.width(220.dp))
-                                    Column(
-                                        horizontalAlignment = Alignment.End
-                                    ) {
-                                        Button(
-                                            onClick = { isSearched = true },
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
-                                        )
-                                        {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.baseline_search_24),
-                                                contentDescription = "Search",
-                                                modifier = Modifier.size(24.dp)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                    })
-                    },
-            /*
+            floatingActionButton = { FAB(showDialog.value, onFabClick, onDismiss, onAddChat) },
             content = {
-                Log.e(chats.toString(),chats.toString())
-                if (chats.isEmpty()) {
-                    Log.e("chats", chats.toString())
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp) // Add some padding to the column for visibility
-                            .background(Color.LightGray), // Add a background color for visibility
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Bottom
-                    ) {
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it)
+                ) {
+                    TitleText(txt = "Chats")
+
+                    if (chats.isEmpty())
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
                             Text(text = "No chats available")
-                    }
-                }
+                        }
                     else {
-                        LazyColumn(modifier = Modifier.padding(1.dp)) {
+                        LazyColumn(modifier = Modifier.weight(1f)) {
                             items(chats) { chat ->
                                 val chatUser = if (chat.user1.userId == userData?.userId) chat.user2
                                 else chat.user1
@@ -191,53 +118,13 @@ fun ChatListScreen(navController: NavController, vm: CViewModel) {
                             }
                         }
                     }
-            },
-             */
-            content = {
-                Log.e("chats", chats.toString())
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-//                        .padding(16.dp) // Add some padding to the column for visibility
-                ) {
-                    if (chats.isEmpty()) {
-                        Log.e("chats", chats.toString())
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color.LightGray), // Add a background color for visibility
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(text = "No chats available")
-                        }
-                    } else {
-                        LazyColumn(modifier = Modifier.padding(1.dp)) {
-                            items(chats) { chat ->
-                                val chatUser = if (chat.user1.userId == userData?.userId) chat.user2
-                                else chat.user1
-                                CommonRow(
-                                    imageUrl = chatUser.imageUrl ?: "",
-                                    name = chatUser.name ?: "---"
-                                ) {
-                                    chat.chatId?.let { id ->
-                                        navigateTo(
-                                            navController,
-                                            DestinationScreen.PersonalChat.createRoute(id)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
+
+                    BottomNavigationMenu(
+                        selectedItem = BottomNavigation.CHATLIST,
+                        navController = navController
+                    )
                 }
-            },
-
-                    floatingActionButton = { FAB(showDialog.value, onFabClick, onDismiss, onAddChat) },
-                    bottomBar = {
-                BottomNavigationMenu(selectedItem = BottomNavigation.CHATLIST, navController = navController)
             }
-
         )
     }
 }

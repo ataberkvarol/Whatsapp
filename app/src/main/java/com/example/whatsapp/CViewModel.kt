@@ -120,23 +120,26 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
         imageUrl: String? = null
     ) {
         val uid = auth.currentUser?.uid
+        Log.e("uid",uid.toString())
         val userData = UserData(
             userId = uid,
             name = name?: userData.value?.name,
             number = number?:userData.value?.number,
             imageUrl = imageUrl?:userData.value?.imageUrl
-        )
+        ).toMap()
         uid?.let { uid ->
-            inProgress.value = true
-            db.collection(COLLECTON_USER).document().get().addOnSuccessListener {
+            inProgress.value = true// hata alt satırda failed to get document
+            db.collection(COLLECTON_USER).document(uid).get().addOnSuccessListener {
                 if (it.exists()) {
-                   // it.reference.update(UserData)
-                     //   .addOnSuccessListener { inProgress.value = false }
-                       // .addOnFailureListener { handleException(it,"cannot update user") }
+                    Log.e("save","success")
+                    it.reference.update(userData as Map<String, Any>)
+                        .addOnSuccessListener { inProgress.value = false }
+                        .addOnFailureListener { handleException(customMessage = "cannot update user") }
                 } else
                     db.collection(COLLECTON_USER).document(uid).set(userData)
                     inProgress.value = false
-            }.addOnFailureListener { handleException(it, "cannot create user") }
+                Log.e("save","failed")
+            }.addOnFailureListener { handleException(it, "cannot create user save failed") }
         }
     }
     fun onLogin(email: String, password: String):Boolean {
@@ -292,6 +295,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
     fun uploadProfileImage(uri: Uri) {
        uploadImage(uri){
            createOrUpdateProfile(imageUrl = uri.toString())
+           Log.e("imageuri",uri.toString())
        }
     }
      fun uploadImage(uri: Uri, function: () -> Unit) {
@@ -311,14 +315,16 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
              }
     }
 
-    fun updateProfileData(name: String,number: String){
-        createOrUpdateProfile(name, number)
+    fun updateProfileData(name: String,number: String,status: String){
+        createOrUpdateProfile(name, number,status)
     }
 
     fun onAddChat(number: String){
-        if (number.isEmpty() || !number.isDigitsOnly())
+        if (number.isEmpty() || !number.isDigitsOnly()) {
+          //  Log.e("phonenumber", number.toString())
             handleException(customMessage = "number must contain only digits")
-        else{
+        }else{
+            Log.e("phonenumber",number.toString())
             db.collection(COLLECTION_CHAT).where(Filter.or(
                 Filter.and(Filter.equalTo("user1.number",number),
                     Filter.equalTo("user2.number",userData.value?.number)),
@@ -333,9 +339,11 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                         db.collection(COLLECTON_USER).whereEqualTo("number",number)
                             .get()
                             .addOnSuccessListener {
-                                if (it.isEmpty)
+                                if (it.isEmpty){
                                     handleException(customMessage = "cannot retrive data from user with number $number")
+                                    Log.e("chat","failed, cannot retrive data from user with number")}
                                 else{
+                                    Log.e("chat","success")
                                     val chatPartner = it.toObjects<UserData>()[0]
                                     val id = db.collection(COLLECTION_CHAT).document().id
                                     val chat = ChatData(id,
@@ -355,10 +363,12 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                                     db.collection(COLLECTION_CHAT).document(id).set(chat)
                                 }
                             }.addOnFailureListener {
+                                Log.e("chat","failed")
                                 handleException(it)
                             }
                     }else{
                         handleException(customMessage = "chat already exists")
+                        Log.e("chat","failed")
                     }
                 }
         }

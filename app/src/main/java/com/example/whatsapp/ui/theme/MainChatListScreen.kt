@@ -145,6 +145,7 @@ fun FAB(
             onDismissRequest = onDismiss,
             confirmButton = {
                 Button(onClick = { onAddChat(addChatNumber.value) }) {
+                    Log.e("number",addChatNumber.value)
                     Text(text = "Add chat")
                 }
             },
@@ -154,8 +155,10 @@ fun FAB(
                     value = addChatNumber.value,
                     onValueChange = { addChatNumber.value = it },
                     placeholder = { Text(text = "Enter phone number") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 )
+                Log.e("number",addChatNumber.value)
+
             }
         )
 

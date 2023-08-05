@@ -3,6 +3,7 @@ package com.example.whatsapp.ui.theme
 import android.Manifest
 import android.annotation.SuppressLint
 import android.preference.PreferenceManager
+import android.provider.MediaStore.Audio.Radio
 import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.mutableStateOf
@@ -43,9 +44,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.darkColorScheme
@@ -76,6 +80,7 @@ fun settingsScreen(navController: NavController, vm: CViewModel) {
 
     var isSearched by remember { mutableStateOf(false) }
     var isClicked = remember { mutableStateOf(false) }
+    var privacy = remember { mutableStateOf("") }
    // val permissionState = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
     var tf by remember { mutableStateOf(TextFieldValue("")) } // by olunca bir dahdeğiştiremiyorsun va gibi oluyor
     //var switchState by rememberSaveable { mutableStateOf(({ false })()) }
@@ -186,7 +191,7 @@ data class Item(val id: Int, val title: String)
 private val ITEMS = listOf(
     Item(1, "Notifications"),
     Item(2, "Dark Mode"),
-    Item(3, "Item 3"),
+    Item(3, "Privacy"),
 )
 @OptIn(ExperimentalAnimationApi::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -201,11 +206,11 @@ fun ItemView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(50),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         ) {
             Text(
                 text = item.title,
@@ -247,11 +252,35 @@ fun ItemView(
                     }
                 }
                 */
+            }
+            var privacy = remember { mutableStateOf("") }
 
+            if (item.title == "Privacy"){
 
+                Spacer(modifier = Modifier.width(65.dp))
+                RadioButton(
+                    selected =  privacy.value == "Friends",
+                    onClick = { privacy.value = "Friends" },
+                    colors = RadioButtonDefaults.colors(Color.DarkGray))
+                Text(text = "Friends")
+
+                Spacer(modifier = Modifier.width(5.dp))
+                RadioButton(
+                    selected =  privacy.value == "Everyone",
+                    onClick = { privacy.value = "Everyone" },
+                    colors = RadioButtonDefaults.colors(Color.DarkGray))
+                Text(text = "Everyone")
+                /*
+                Spacer(modifier = Modifier.width(10.dp))
+                RadioButton(
+                    selected =  privacy.value == "Nobody",
+                    onClick = { privacy.value == "Nobody" },
+                    colors = RadioButtonDefaults.colors(Color.Green))
+                Text(text = "Nobody")
+                 */
             }
             if(item.title == "Dark Mode" ){
-                Spacer(modifier = Modifier.width(190.dp))
+                Spacer(modifier = Modifier.width(180.dp))
                 SwitchButtonFunction(switchState)
             }
             details.value = false

@@ -4,6 +4,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.dagger.hilt.android'
     id 'kotlin-kapt'
+
 }
 
 android {
@@ -51,11 +52,12 @@ android {
 }
 
 dependencies {
-
     implementation "androidx.navigation:navigation-compose:2.6.0"
-    implementation "com.google.firebase:firebase-auth:22.1.0"
+   // implementation "com.google.firebase:firebase-auth:22.1.0"
     implementation platform('com.google.firebase:firebase-bom:32.0.0')
+    //implementation(platform("com.google.firebase:firebase-bom:32.2.2"))
     implementation "com.google.firebase:firebase-auth-ktx"
+    implementation "com.google.firebase:firebase-database-ktx"
     implementation "com.google.firebase:firebase-firestore-ktx"
     implementation "com.google.firebase:firebase-storage-ktx"
     implementation "com.google.dagger:hilt-android:2.44"

@@ -12,7 +12,7 @@ data class ChatUser(
         val imageUrl: String? = "",
         val timestamp: Long? = null
     )
-    data class  Message(
+    data class Message(
         val sentBy:String? = "",
         val message:String? = "",
         val timestamp: String? = " "

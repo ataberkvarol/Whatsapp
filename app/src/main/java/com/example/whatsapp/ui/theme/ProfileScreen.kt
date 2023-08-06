@@ -72,8 +72,9 @@ fun ProfileScreen(navController: NavController, vm: CViewModel) {
         var name by rememberSaveable { mutableStateOf(userData?.name ?: "") }
         var number by rememberSaveable { mutableStateOf(userData?.number ?: "") }
         var status by rememberSaveable { mutableStateOf(userData?.status ?: "") }
+        var imageUrl by rememberSaveable { mutableStateOf(userData?.imageUrl?: "")} //eklendi
 
-        val scrollState = rememberScrollState()
+            val scrollState = rememberScrollState()
         val focus = LocalFocusManager.current
 
         Column {
@@ -91,7 +92,7 @@ fun ProfileScreen(navController: NavController, vm: CViewModel) {
                 onStatusChange = { status = it },
                 onSave = {
                     focus.clearFocus(true)
-                    vm.updateProfileData(name, number, status)
+                    vm.updateProfileData(name, number, status,imageUrl)
                 },
                 onBack = {
                     focus.clearFocus(true)
@@ -273,53 +274,8 @@ fun ProfileImage(imageUrl: String?, vm: CViewModel) {
             }
             Text(text = "Change profile picture")
         }
-        //FirebaseFirestore.getInstance().document("https://console.firebase.google.com/project/whatsapp-bd185/database/whatsapp-bd185-default-rtdb/data/~2F")
-
         val isLoading = vm.inProgress.value
         if (isLoading)
             CommonProcessSpinner()
-    }
-}
-
-
-
-
-@Composable
-fun BoxWithClickableImagePicker() {
-    var selectedImage: ImageBitmap? by remember { mutableStateOf(null) }
-    val context = LocalContext.current
-
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-          //  val imagePath = getImagePathFromUri(it)
-           // loadImageFromPath(imagePath)
-        }
-    }
-
-    // Function to load the selected image from the images folder
-    fun loadImageFromPath(path: String?) {
-        path?.let {
-            val options = BitmapFactory.Options().apply {
-                inPreferredConfig = Bitmap.Config.RGB_565
-            }
-            val bitmap = BitmapFactory.decodeFile(path, options)
-            selectedImage = bitmap?.asImageBitmap()
-        }
-    }
-
-    // Function to get the image path from the Uri
-    fun getImagePathFromUri(uri: Uri): String? {
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor = context.contentResolver.query(uri, projection, null, null, null)
-        cursor?.let {
-            val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            it.moveToFirst()
-            val imagePath = it.getString(columnIndex)
-            cursor.close()
-            return imagePath
-        }
-        return null
     }
 }

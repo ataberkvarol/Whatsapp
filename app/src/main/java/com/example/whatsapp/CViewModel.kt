@@ -19,6 +19,7 @@ import com.example.whatsapp.data.ChatData
 import com.example.whatsapp.data.ChatUser
 import com.example.whatsapp.data.Message
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -117,7 +118,8 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
     private fun createOrUpdateProfile(
         name: String? = null,
         number: String? = null,
-        imageUrl: String? = null
+        imageUrl: String? = null,
+        status: String? = null // eklendi
     ) {
         val uid = auth.currentUser?.uid
         Log.e("uid",uid.toString())
@@ -125,7 +127,8 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
             userId = uid,
             name = name?: userData.value?.name,
             number = number?:userData.value?.number,
-            imageUrl = imageUrl?:userData.value?.imageUrl
+            imageUrl = imageUrl?:userData.value?.imageUrl,
+            status = status?:userData.value?.status // eklendi
         ).toMap()
         uid?.let { uid ->
             inProgress.value = true// hata alt satırda failed to get document
@@ -315,8 +318,8 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
              }
     }
 
-    fun updateProfileData(name: String,number: String,status: String){
-        createOrUpdateProfile(name, number,status)
+    fun updateProfileData(name: String,number: String,status: String, imageUrl: String){
+        createOrUpdateProfile(name,number,imageUrl,status )
     }
 
     fun onAddChat(number: String){
@@ -351,7 +354,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                                         userData.value?.userId,
                                         userData.value?.number,
                                         userData.value?.name,
-                                        userData.value?.imageUrl
+                                        userData.value?.imageUrl,
                                     ),
                                         ChatUser(
                                             chatPartner.userId,
@@ -425,9 +428,13 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                 if (error!=null)
                     handleException(error)
                 if (value!= null)
+                    chats.value = value.documents.mapNotNull { it.toObject<ChatData>() }
+                /*
                     chatMessages.value = value.documents
                         .mapNotNull { it.toObject<Message>() }
                         .sortedBy { it.timestamp }
+
+                 */
                 inProgressChats.value = false
             }
     }

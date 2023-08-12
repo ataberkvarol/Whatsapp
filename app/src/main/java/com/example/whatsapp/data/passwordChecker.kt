@@ -5,8 +5,8 @@ import java.util.regex.Pattern
 public class passwordChecker(){
 
     private val atLeastOneDigit = Pattern.compile(".*\\d")
-    private val atLeastOneUpperCase = Pattern.compile(".*[A-Z]")
-    private val atLeastOneLowerCase = Pattern.compile(".*[a-z]")
+    private val atLeastOneUpperCase = Pattern.compile(".*[a-z]+.*")
+    private val atLeastOneLowerCase = Pattern.compile(".*[a-z]+.*")
     private val noSpace = Pattern.compile(" ")
     private val atLeastOneSymbol = Pattern.compile(".*[@#$%^&+-=?*]")
     private val atLeastEightChar = Pattern.compile(".{8,}")
@@ -17,21 +17,8 @@ public class passwordChecker(){
     public fun checkUpperCase(password:String): Boolean {
         return password.matches(atLeastOneUpperCase.toRegex())
     }
-
     public fun checkLowerCase(password:String): Boolean {
-        try {
-            var state:Boolean = false
-            if(password.toCharArray().iterator().nextChar().isLowerCase()) {
-                state = true
-                return state
-            }
-                return state
-        }catch (e: Exception){
-            return false
-        }
-
-
-       // return password.matches(atLeastOneLowerCase.toRegex())
+        return password.matches(atLeastOneLowerCase.toRegex())
     }
 
     public fun checkSpaces(password:String): Boolean {

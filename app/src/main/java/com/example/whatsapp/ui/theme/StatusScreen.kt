@@ -28,7 +28,6 @@ enum class ProgressIndicatorState {
     COMPLETED
 }
 
-
 @Composable
 fun StatusScreen(navController: NavController, vm: CViewModel, userId: String) {
     val statuses = vm.status.value.filter { it.user?.userId == userId }

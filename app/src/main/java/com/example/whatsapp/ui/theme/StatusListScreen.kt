@@ -32,20 +32,20 @@ import com.example.whatsapp.TitleText
 import com.example.whatsapp.navigateTo
 import com.example.whatsapp.ui.theme.BottomNavigation
 import com.example.whatsapp.ui.theme.BottomNavigationMenu
-import com.example.whatsapp.data.Status
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatusListScreen(navController: NavController, vm: CViewModel) {
+    //val inProgress = vm.inProgressStories.value
     val inProgress = vm.inProgressStatus.value
     if (inProgress)
         CommonProcessSpinner()
     else {
         val statuses = vm.status.value
         val userData = vm.userData.value
-        val myStatuses = statuses.filter { it.user.userId == userData?.userId}
-        val otherStatuses = statuses.filter { it.user.userId != userData?.userId }
+        val myStatuses = statuses.filter { it.user?.userId == userData?.userId }
+        val otherStatuses = statuses.filter { it.user?.userId != userData?.userId }
 
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent(),
@@ -54,7 +54,6 @@ fun StatusListScreen(navController: NavController, vm: CViewModel) {
                 vm.uploadStatus(uri)
             }
         }
-
         Scaffold(
             floatingActionButton = {
                 FAB {
@@ -78,27 +77,17 @@ fun StatusListScreen(navController: NavController, vm: CViewModel) {
                         ) {
                             Text(text = "No statuses available")
                         }
-
-
                     else {
-
                         if (myStatuses.isNotEmpty()) {
                             CommonRow(
-                                imageUrl = myStatuses[0].imageUrl,
-                                name = myStatuses[0].user.name
+                                imageUrl = myStatuses[0].user?.imageUrl,
+                                name = myStatuses[0].user?.name
                             ) {
-                                myStatuses[0].user.userId?.let { it1 ->
-                                    DestinationScreen.StatusScreen.createRoute(
-                                        it1
-                                    )
-                                }?.let { it2 ->
-                                    navigateTo(
-                                        navController,
-                                        it2
-                                    )
-                                }
+                                navigateTo(
+                                    navController,
+                                    DestinationScreen.StatusScreen.createRoute(myStatuses[0].user?.userId.toString())
+                                )
                             }
-
                             CommonDivider()
                         }
                         val uniqueUsers = otherStatuses.map { it.user }.toSet().toList()
@@ -108,16 +97,10 @@ fun StatusListScreen(navController: NavController, vm: CViewModel) {
                                     imageUrl = user?.imageUrl,
                                     name = user?.name
                                 ) {
-                                    user.userId?.let { it1 ->
-                                        DestinationScreen.StatusScreen.createRoute(
-                                            it1
-                                        )
-                                    }?.let { it2 ->
-                                        navigateTo(
-                                            navController,
-                                            it2
-                                        )
-                                    }
+                                    navigateTo(
+                                        navController,
+                                        DestinationScreen.StatusScreen.createRoute(user?.userId.toString())
+                                    )
                                 }
                             }
                         }
@@ -127,7 +110,6 @@ fun StatusListScreen(navController: NavController, vm: CViewModel) {
                         navController = navController
                     )
                 }
-
             }
         )
     }

@@ -28,12 +28,12 @@ enum class ProgressIndicatorState {
     COMPLETED
 }
 
+
 @Composable
 fun StatusScreen(navController: NavController, vm: CViewModel, userId: String) {
-    val statuses = vm.status.value.filter { it.equals(userId)}
+    val statuses = vm.status.value.filter { it.user?.userId == userId }
     if (statuses.isNotEmpty()) {
         val currentStatus = remember { mutableStateOf(0) }
-
 
         Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
             CommonImage(

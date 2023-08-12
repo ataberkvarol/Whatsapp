@@ -71,10 +71,10 @@ fun ProfileScreen(navController: NavController, vm: CViewModel) {
         val userData = vm.userData.value
         var name by rememberSaveable { mutableStateOf(userData?.name ?: "") }
         var number by rememberSaveable { mutableStateOf(userData?.number ?: "") }
-        var status by rememberSaveable { mutableStateOf(userData?.status ?: "") }
         var imageUrl by rememberSaveable { mutableStateOf(userData?.imageUrl?: "")} //eklendi
+        var status by rememberSaveable { mutableStateOf(userData?.status ?: "") }
 
-            val scrollState = rememberScrollState()
+        val scrollState = rememberScrollState()
         val focus = LocalFocusManager.current
 
         Column {
@@ -92,7 +92,7 @@ fun ProfileScreen(navController: NavController, vm: CViewModel) {
                 onStatusChange = { status = it },
                 onSave = {
                     focus.clearFocus(true)
-                    vm.updateProfileData(name, number, status,imageUrl)
+                    vm.updateProfileData(name, number,imageUrl,status)
                 },
                 onBack = {
                     focus.clearFocus(true)
@@ -257,6 +257,7 @@ fun ProfileImage(imageUrl: String?, vm: CViewModel) {
             vm.uploadProfileImage(uri)
         }
     }
+    Log.e("launcher", launcher.toString())
 
     Box(modifier = Modifier.height(IntrinsicSize.Min)) {
         Column(modifier = Modifier

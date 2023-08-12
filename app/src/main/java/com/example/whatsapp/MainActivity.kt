@@ -6,6 +6,7 @@ import StatusListScreen
 import StatusScreen
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,8 +40,8 @@ sealed class DestinationScreen(val route: String){
     object ChatListScreen : DestinationScreen("ChatListScreen")
     object  ResetPasswordScreen : DestinationScreen("ResetPassword")
     object  ResetEmailScreen : DestinationScreen("ResetEmail")
-    object StatusScreen : DestinationScreen("StatusScreen"){
-        fun createRoute(id:String) = "StatusScreen/$id"
+    object StatusScreen : DestinationScreen("StatusScreen/{userId}"){
+        fun createRoute(userId:String) = "StatusScreen/$userId"
     }
     object  SettingsScreen : DestinationScreen("SettingsScreen")
     object StatusListScreen : DestinationScreen("StatusListScreen")
@@ -67,7 +68,7 @@ fun ChatAppNavigation() {
     val navController = rememberNavController()
     val vm = hiltViewModel<CViewModel>()
     
-    NavHost(navController = navController , startDestination =  DestinationScreen.ProfileScreen.route){
+    NavHost(navController = navController , startDestination =  DestinationScreen.Login.route){
         composable(DestinationScreen.Signup.route){
             SignupScreen(navController, vm)
         }
@@ -89,14 +90,18 @@ fun ChatAppNavigation() {
         composable(DestinationScreen.ChatListScreen.route){
             ChatListScreen(navController = navController, vm = vm)
         }
+        /*
         composable(DestinationScreen.NotificationsScreen.route){
             NotificationsScreen(navController = navController, vm = vm)
         }
+
+         */
         composable(DestinationScreen.SettingsScreen.route){
             settingsScreen(navController = navController, vm = vm)
         }
         composable(DestinationScreen.StatusScreen.route){
             val userId = it.arguments?.getString("userId")
+            Log.e("userId",userId.toString())
             userId?.let {
                 StatusScreen(navController = navController, vm = vm, userId = userId)
             }

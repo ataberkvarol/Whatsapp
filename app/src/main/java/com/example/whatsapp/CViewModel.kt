@@ -121,6 +121,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
         imageUrl: String? = null,
         status: String? = null // eklendi
     ) {
+        Log.e("imageUrl",imageUrl.toString())
         val uid = auth.currentUser?.uid
         Log.e("uid",uid.toString())
         val userData = UserData(
@@ -290,16 +291,23 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                 userData.value?.imageUrl,
                 userData.value?.number
             ) as ChatUser,
+
             imageUrl,
             System.currentTimeMillis()
         )
+        Log.e("imageUrl",userData.value?.imageUrl.toString())
+        Log.e("name",userData.value?.name.toString())
+        Log.e("status",userData.value?.status.toString())
+        Log.e("number",userData.value?.number.toString())
         db.collection(COLLECTION_STATUS).document().set(newStatus)
     }
     fun uploadProfileImage(uri: Uri) {
        uploadImage(uri){
+           Log.e("Uploadimageuri",uri.toString())
            createOrUpdateProfile(imageUrl = uri.toString())
-           Log.e("imageuri",uri.toString())
+
        }
+        createOrUpdateProfile(imageUrl = uri.toString())
     }
      fun uploadImage(uri: Uri, function: () -> Unit) {
         inProgress.value = true
@@ -307,6 +315,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
          val uuid = UUID.randomUUID()
          val imageRef = storageRef.child("image/$uuid")
          val uploadTask = imageRef.putFile(uri)
+         Log.e("UploadImageimageuri",uri.toString())
 
          uploadTask.addOnSuccessListener {
              val result = it.metadata?.reference?.downloadUrl
@@ -315,10 +324,12 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
          }
              .addOnFailureListener{
                  handleException(it)
+                 Log.e("UploadImageimageuri","hata")
+
              }
     }
 
-    fun updateProfileData(name: String,number: String,status: String, imageUrl: String){
+    fun updateProfileData(name: String,number: String,imageUrl: String,status: String, ){
         createOrUpdateProfile(name,number,imageUrl,status )
     }
 
@@ -378,8 +389,10 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
     }
     fun uploadStatus(imageUri:Uri){
         uploadImage(imageUri){
+            Log.e("imageURL",imageUri.toString())
             createStatus(imageUrl = imageUri.toString())
         }
+        createStatus(imageUrl = imageUri.toString())
     }
     fun populateStatuses(){
         inProgressStatus.value = true

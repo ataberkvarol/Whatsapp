@@ -21,6 +21,7 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -57,6 +58,8 @@ import com.example.whatsapp.TitleText
 import com.example.whatsapp.navigateTo
 import com.example.whatsapp.ui.theme.BottomNavigation
 import com.example.whatsapp.ui.theme.BottomNavigationMenu
+
+
 //import com.example.whatsapp.ui.theme.CommonProgressSpinner
 //COMMON PRGRES SPINNER I YAZ
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -69,7 +72,8 @@ fun ChatListScreen(navController: NavController, vm: CViewModel) {
     else {
         val chats = vm.chats.value
         val userData = vm.userData.value
-
+        var isSearched by remember { mutableStateOf(false) }
+        var tf by remember { mutableStateOf(TextFieldValue("")) }
         val showDialog = remember { mutableStateOf(false) }
         val onFabClick: () -> Unit = { showDialog.value = true }
         val onDismiss: () -> Unit = { showDialog.value = false }
@@ -79,16 +83,82 @@ fun ChatListScreen(navController: NavController, vm: CViewModel) {
         }
 
         Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        if (isSearched) {
+                            Log.e("if","if")
+                            BasicTextField(
+                                value = tf,
+                                onValueChange = { tf = it ;if (it.text.isEmpty()) {
+                                    isSearched = false
+                                }},
+                                textStyle = LocalTextStyle.current.copy(color = Color.Black),
+                                singleLine = true,
+                                decorationBox = { innerTextField ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.baseline_search_24),
+                                            contentDescription = "Search",
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        innerTextField()
+                                        Spacer(modifier = Modifier.width(154.dp))
+
+                                        Column(
+                                            horizontalAlignment = Alignment.End
+                                        ) {
+                                            IconButton(onClick = { isSearched = false })
+                                            {
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.baseline_cancel_24),
+                                                    contentDescription = "test",
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            )
+                        } else {
+                            Log.e("asd","else")
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                Text(
+                                    text = "Chats",
+                                    style = androidx.compose.ui.text.TextStyle(fontSize = 35.sp, fontWeight = FontWeight.ExtraBold)
+                                )
+                                Spacer(modifier = Modifier.width(220.dp))
+                                Column(
+                                    horizontalAlignment = Alignment.End
+                                ) {
+                                    Button(onClick = {isSearched = true}, colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray) )
+                                    {
+                                        Icon( painter = painterResource(id = R.drawable.baseline_search_24),
+                                            contentDescription = "Search",
+                                            modifier = Modifier.size(24.dp))
+                                    }
+                                }
+                            }
+                        }
+                    },
+                )
+            },
             floatingActionButton = { FAB(showDialog.value, onFabClick, onDismiss, onAddChat) },
             content = {
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(it)
                 ) {
-                    TitleText(txt = "Chats")
-
                     if (chats.isEmpty())
                         Column(
                             modifier = Modifier
@@ -101,24 +171,56 @@ fun ChatListScreen(navController: NavController, vm: CViewModel) {
                         }
                     else {
                         LazyColumn(modifier = Modifier.weight(1f)) {
-                            items(chats) { chat ->
+                            val filteredItems = if (isSearched) {
+                               Log.e("nuber", userData?.number.toString())
+                                Log.e("name", chats.get(2).user1.name.toString())
+                                Log.e("number", chats.get(2).user1.number.toString())
+                                Log.e("userId", chats.get(2).user1.userId.toString())
+                                Log.e("imageurl", chats.get(2).user1.imageUrl.toString())
+                               chats.filter { chat ->
+                                    chat.user1.name?.contains(tf.text, ignoreCase = true) == true // verilerin yanlış gitmesindn ötürü name e çektim normalde number olmalı
+                                }
+
+
+                            } else {
+                                chats
+                            }
+                            items(filteredItems) { chat ->
                                 val chatUser = if (chat.user1.userId == userData?.userId) chat.user2
                                 else chat.user1
-                                CommonRow(
-                                    imageUrl = chatUser.imageUrl ?: "",
-                                    name = chatUser.name ?: "---"
-                                ) {
-                                    chat.chatId?.let {id ->
-                                        navigateTo(
-                                            navController,
-                                            DestinationScreen.PersonalChat.createRoute(id)
-                                        )
+                                Log.e("chatid",chat.chatId.toString())
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp), // Adjust padding as needed
+                                    //elevation = 4.dp, // Adjust elevation as needed
+                                    onClick = {
+                                        chat.chatId?.let { id ->
+                                            navigateTo(
+                                                navController,
+                                                DestinationScreen.PersonalChat.createRoute(id)
+                                            )
+                                        }
                                     }
+                                ) {
+                                    CommonRow(
+                                        imageUrl = chatUser.imageUrl ?: "",
+                                        name = chatUser.name ?: "---",
+                                        onItemClick = {
+                                            // Handle the item click action here
+                                            chat.chatId?.let { id ->
+                                                navigateTo(
+                                                    navController,
+                                                    DestinationScreen.PersonalChat.createRoute(id)
+                                                )
+                                            }
+                                        }
+                                    )
+
                                 }
                             }
                         }
                     }
-
                     BottomNavigationMenu(
                         selectedItem = BottomNavigation.CHATLIST,
                         navController = navController
@@ -128,7 +230,6 @@ fun ChatListScreen(navController: NavController, vm: CViewModel) {
         )
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FAB(
@@ -137,9 +238,7 @@ fun FAB(
     onDismiss: () -> Unit,
     onAddChat: (String) -> Unit
 ) {
-
     val addChatNumber = remember { mutableStateOf("") }
-
     if (showDialog)
         AlertDialog(
             onDismissRequest = onDismiss,
@@ -158,10 +257,8 @@ fun FAB(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 )
                 Log.e("number",addChatNumber.value)
-
             }
         )
-
     FloatingActionButton(
         onClick = onFabClick,
         containerColor = MaterialTheme.colorScheme.secondary,

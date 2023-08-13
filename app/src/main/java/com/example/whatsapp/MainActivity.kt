@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.codingwithmitch.composegooglemaps.compose.MapScreen
 import com.example.whatsapp.cluster.ZoneClusterManager
 import com.example.whatsapp.data.MapState
+import com.example.whatsapp.ui.theme.CameraScreen
 import com.example.whatsapp.ui.theme.SignupScreen
 import com.example.whatsapp.ui.theme.loginScreen
 import com.example.whatsapp.ui.theme.personalChatScreen
@@ -28,14 +29,18 @@ import com.example.whatsapp.ui.theme.settingsScreen
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.AndroidEntryPoint
+/*TODO navigation page and picture issue will have to fix* /
 
-/*TODO: status ekranını düzenle */
+ */
+
+
 sealed class DestinationScreen(val route: String){
 
     object Signup : DestinationScreen("signup")
     object Login : DestinationScreen("login")
     object ProfileScreen : DestinationScreen("ProfileScreen")
     object ChatListScreen : DestinationScreen("ChatListScreen")
+    object CameraScreen : DestinationScreen("CameraScreen")
     object ResetPasswordScreen : DestinationScreen("ResetPassword")
     object ResetEmailScreen : DestinationScreen("ResetEmail")
     object MapScreen : DestinationScreen("MapScreen")
@@ -49,8 +54,6 @@ sealed class DestinationScreen(val route: String){
     object PersonalChat : DestinationScreen("PersonalChat/{chatId}"){
         fun createRoute(id:String) = "PersonalChat/$id"
     }
-
-
 }
 
 @AndroidEntryPoint
@@ -88,6 +91,9 @@ fun ChatAppNavigation() {
         }
         composable(DestinationScreen.ResetEmailScreen.route){
             resetEmail(navController = navController, vm = vm)
+        }
+        composable(DestinationScreen.CameraScreen.route){
+            CameraScreen(navController = navController, vm = CameraViewModel())
         }
         composable(DestinationScreen.ResetPasswordMailScreen.route){
             ResetPaswordMail(navController = navController, vm = vm)

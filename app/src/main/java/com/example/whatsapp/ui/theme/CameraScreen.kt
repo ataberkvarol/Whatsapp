@@ -38,6 +38,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.whatsapp.CameraState
 import com.example.whatsapp.CameraViewModel
 import com.example.whatsapp.utilities.rotateBitmap
@@ -45,20 +46,18 @@ import java.io.ByteArrayOutputStream
 
 
 @Composable
-fun CameraScreen(
-    viewModel: CameraViewModel = viewModel()
-) {
+fun CameraScreen(navController: NavController, vm: CameraViewModel = viewModel()) {
 
-    val cameraState: CameraState by viewModel.state.collectAsStateWithLifecycle()
+    val cameraState: CameraState by vm.state.collectAsStateWithLifecycle()
 
     CameraContent(
-        onPhotoCaptured = viewModel::onPhotoCaptured
+        onPhotoCaptured = vm::onPhotoCaptured
     )
 
     cameraState.capturedImage?.let { capturedImage: Bitmap ->
         CapturedImageBitmapDialog(
             capturedImage = capturedImage,
-            onDismissRequest = viewModel::onCapturedPhotoConsumed
+            onDismissRequest = vm::onCapturedPhotoConsumed
         )
     }
 }

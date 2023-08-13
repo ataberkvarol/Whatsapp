@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,6 +29,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,6 +49,7 @@ import com.example.whatsapp.DestinationScreen
 import com.example.whatsapp.R
 import com.example.whatsapp.data.Message
 import com.example.whatsapp.utilities.navigateTo
+import kotlinx.coroutines.launch
 
 @Composable
 fun personalChatScreen (navController: NavController, vm: CViewModel, chatId: String){
@@ -142,6 +146,8 @@ fun Messages(modifier: Modifier, chatMessages: List<Message>, currentUserId: Str
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReplyBox(navController: NavController,reply: String, onReplyChange: (String) -> Unit, onSendReply: () -> Unit) {
+    val scope = rememberCoroutineScope()
+    var showDialog by remember { mutableStateOf(false) }
     Column(modifier = Modifier.fillMaxWidth()) {
         CommonDivider()
         Row(modifier = Modifier
@@ -149,10 +155,10 @@ fun ReplyBox(navController: NavController,reply: String, onReplyChange: (String)
             .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconButton(onClick = { navigateTo(navController, DestinationScreen.MapScreen.route) })
+            IconButton(onClick = { showDialog = true  })
             {
                 Icon(
-                    painter = painterResource(id = R.drawable.baseline_navigation_24),
+                    painter = painterResource(id = R.drawable.baseline_view_headline_24),
                     contentDescription = "test",
                     modifier = Modifier.size(24.dp)
                 )
@@ -162,5 +168,33 @@ fun ReplyBox(navController: NavController,reply: String, onReplyChange: (String)
                 Text(text = "Send")
             }
         }
+    }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Chat Extensions") },
+            confirmButton = {
+                IconButton(onClick = { navigateTo(navController, DestinationScreen.CameraScreen.route)  })
+                {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_camera_alt_24),
+                        contentDescription = "test",
+                        modifier = Modifier.size(24.dp)
+                    )
+                   // Text("Camera")
+                }
+            },
+            dismissButton = {
+                IconButton(onClick = { navigateTo(navController, DestinationScreen.MapScreen.route)  })
+                {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_navigation_24),
+                        contentDescription = "test",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    //Text("Location")
+                }
+            },
+        )
     }
 }

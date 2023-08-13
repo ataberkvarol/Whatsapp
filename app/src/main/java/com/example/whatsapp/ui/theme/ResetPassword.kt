@@ -127,14 +127,19 @@ fun resetPassword(navController: NavController, vm: CViewModel) {
             Button(
                 onClick = {
                     focus.clearFocus(force = true)
-                    var wasReset = vm.onResetPassword(
-                        emailState.value.text,
-                        passwordState.value.text
-                    )
-                    if(wasReset){
-                        navigateTo(navController,DestinationScreen.Login.route)
+                    var isSuitablePassword:Boolean
+                    isSuitablePassword = passwordChecker().checkAllConditions(passwordState.value.text)
+                    if (isSuitablePassword) {
+                        var wasReset = vm.onResetPassword(
+                            emailState.value.text,
+                            passwordState.value.text
+                        )
+                        if(wasReset){
+                            navigateTo(navController,DestinationScreen.Login.route)
+                        }else
+                            ShowToast(context,"Reset was failed")
                     }else
-                        ShowToast(context,"Reset was failed")
+                        ShowToast(context, "The password you entered did not meet the required conditions.")
                 },
                 modifier = Modifier.padding(8.dp)
             ) {

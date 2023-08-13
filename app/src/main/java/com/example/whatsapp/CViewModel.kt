@@ -46,6 +46,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
     val popUpNotification = mutableStateOf<com.example.whatsapp.data.Event<String>?>(null)
     val signedIn = mutableStateOf(false)
     val resetPassword = mutableStateOf(false)
+    val emailSend = mutableStateOf(false)
     val signedUp = mutableStateOf(false)
     val userData = mutableStateOf<UserData?>(null)
     // chat
@@ -185,6 +186,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                         inProgress.value = false
                         auth.currentUser?.uid?.let { getUserData(it) }
                     } else {
+                        resetPassword.value = false
                         handleException(task.exception, "reset password was failed")
                         Log.e("error", task.exception.toString())
                     }
@@ -200,24 +202,22 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
         }
     }
 
-
-    fun onResetEmail(password: String):Boolean {
-        /*
-        Log.e("Model" + password, "Model" + password)
-        if (!password.isBlank()) {
+    fun onResetEmail(email: String):Boolean {
+        if (!email.isBlank()){
             inProgress.value = true
-            auth.currentUse
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        signedIn.value = true
-                        inProgress.value = false
-                        auth.currentUser?.uid?.let { getUserData(it) }
-                    } else {
-                        handleException(task.exception, "login failed")
-                        Log.e("error", task.exception.toString())
-                    }
-                }.addOnFailureListener { handleException(it, "login failed") }
-            if (signedIn.value == true) {
+            auth.sendPasswordResetEmail(email).addOnCompleteListener {   task ->
+                if (task.isSuccessful) {
+                    Log.e("success" + email, "success")
+                    emailSend.value = true
+                    inProgress.value = false
+                    resetPassword.value = true
+                } else {
+                    resetPassword.value = false
+                    handleException(task.exception, "reset password was failed")
+                    Log.e("error", task.exception.toString())
+                }
+            }.addOnFailureListener { handleException(it, "reset password was failed") }
+            if (resetPassword.value == true) {
                 return true
             } else
                 return false
@@ -226,8 +226,6 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
             Log.e("error", "please fill the required fields")
             return false
         }
-        */
-         return false
     }
 
 
@@ -257,8 +255,6 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                Log.e("the password must be longer or equal than 8 characters","the password must be longer or equal than 8 characters")
 
                              */
-
-
 
     fun onLogout(){
         auth.signOut()

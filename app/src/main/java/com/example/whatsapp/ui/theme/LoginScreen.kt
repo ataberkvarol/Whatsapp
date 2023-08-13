@@ -200,7 +200,7 @@ fun loginScreen(navController:NavController, vm:CViewModel,videoUri:Uri){
                 modifier = Modifier
                     .padding(8.dp)
                     .clickable {
-                        navigateTo(navController, DestinationScreen.ResetPasswordScreen.route)
+                        navigateTo(navController, DestinationScreen.ResetPasswordMailScreen.route)
                     })
             val isLoading = vm.inProgress.value
             if (isLoading){

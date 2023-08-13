@@ -48,6 +48,7 @@ import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
 import com.example.whatsapp.DestinationScreen
 import com.example.whatsapp.R
+import com.example.whatsapp.data.passwordChecker
 import com.example.whatsapp.navigateTo
 
 @SuppressLint("ResourceType")
@@ -165,16 +166,21 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
             Button(
                 onClick = {
                     focus.clearFocus(force = true)
-                    var isSignedUp = vm.signUp(
-                       nameState.value.text ,
-                       numberState.value.text,
-                       emailState.value.text,
-                       passwordState.value.text
-                   )
-                    if(isSignedUp){
-                        navigateTo(navController,DestinationScreen.Login.route)
+                    var isSuitablePassword:Boolean
+                    isSuitablePassword = passwordChecker().checkAllConditions(passwordState.value.text)
+                    if (isSuitablePassword) {
+                        var isSignedUp = vm.signUp(
+                            nameState.value.text,
+                            numberState.value.text,
+                            emailState.value.text,
+                            passwordState.value.text
+                        )
+                        if (isSignedUp) {
+                            navigateTo(navController, DestinationScreen.Login.route)
+                        } else
+                            ShowToast(context, "Sign up was failed")
                     }else
-                        ShowToast(context,"Sign up was failed")
+                        ShowToast(context, "The password you entered did not meet the required conditions.")
                 },
                 modifier = Modifier.padding(8.dp)
             ) {
@@ -190,6 +196,17 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
             val isLoading = vm.inProgress.value
             if (isLoading){
                 CircularProgressIndicator()
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                Log.e("state",passwordState.value.text)
+                ConditionRow(condition = "Minimum 8 characters", check = passwordChecker().checkNumberOfChar(passwordState.value.text))
+                ConditionRow(condition = "Minimum 1 uppercase character", check = passwordChecker().checkUpperCase(passwordState.value.text))
+                ConditionRow(condition = "Minimum 1 lowercase character", check = passwordChecker().checkLowerCase(passwordState.value.text))
+                ConditionRow(condition = "Minimum 1 numeric character", check = passwordChecker().checkNumberOfDigit(passwordState.value.text))
+                ConditionRow(condition = "Minimum 1 special character", check = passwordChecker().checkSymbol(passwordState.value.text))
+                ConditionRow(condition = "Must not has space character", check = passwordChecker().checkSpaces(passwordState.value.text))
+                Log.e(passwordState.value.text,passwordState.value.text)
             }
         }
     }

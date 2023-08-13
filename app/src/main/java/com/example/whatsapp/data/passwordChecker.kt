@@ -4,7 +4,7 @@ import java.util.regex.Pattern
 
 public class passwordChecker(){
 
-    private val atLeastOneDigit = Pattern.compile(".*\\d")
+    private val atLeastOneDigit = Pattern.compile(".*[0-9]+.*")
     private val atLeastOneUpperCase = Pattern.compile(".*[a-z]+.*")
     private val atLeastOneLowerCase = Pattern.compile(".*[a-z]+.*")
     private val noSpace = Pattern.compile(" ")
@@ -32,4 +32,11 @@ public class passwordChecker(){
     public fun checkNumberOfChar(password:String): Boolean{
         return password.matches(atLeastEightChar.toRegex())
     }
+    public fun checkAllConditions(password:String): Boolean{
+        if (password.matches(noSpace.toRegex()) && password.matches(atLeastEightChar.toRegex()) && password.matches(atLeastOneDigit.toRegex()) && password.matches(atLeastOneUpperCase.toRegex()) && password.matches(atLeastOneLowerCase.toRegex()) && password.matches(atLeastOneSymbol.toRegex())){
+            return true
+        }else
+            return false
+    }
+
 }

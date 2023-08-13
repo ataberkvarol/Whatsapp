@@ -26,6 +26,7 @@ import com.example.whatsapp.ui.theme.WhatsappTheme
 import com.example.whatsapp.ui.theme.loginScreen
 import com.example.whatsapp.ui.theme.personalChatScreen
 import com.example.whatsapp.ui.theme.ProfileScreen
+import com.example.whatsapp.ui.theme.ResetPaswordMail
 import com.example.whatsapp.ui.theme.resetEmail
 import com.example.whatsapp.ui.theme.resetPassword
 import com.example.whatsapp.ui.theme.settingsScreen
@@ -38,12 +39,13 @@ sealed class DestinationScreen(val route: String){
     object Login : DestinationScreen("login")
     object ProfileScreen : DestinationScreen("ProfileScreen")
     object ChatListScreen : DestinationScreen("ChatListScreen")
-    object  ResetPasswordScreen : DestinationScreen("ResetPassword")
-    object  ResetEmailScreen : DestinationScreen("ResetEmail")
+    object ResetPasswordScreen : DestinationScreen("ResetPassword")
+    object ResetEmailScreen : DestinationScreen("ResetEmail")
+    object ResetPasswordMailScreen : DestinationScreen("ResetPasswordMail")
     object StatusScreen : DestinationScreen("StatusScreen/{userId}"){
         fun createRoute(userId:String) = "StatusScreen/$userId"
     }
-    object  SettingsScreen : DestinationScreen("SettingsScreen")
+    object SettingsScreen : DestinationScreen("SettingsScreen")
     object StatusListScreen : DestinationScreen("StatusListScreen")
     object NotificationsScreen : DestinationScreen("NotificationsScreen")
     object PersonalChat : DestinationScreen("PersonalChat/{chatId}"){
@@ -80,6 +82,9 @@ fun ChatAppNavigation() {
         }
         composable(DestinationScreen.ResetEmailScreen.route){
             resetEmail(navController = navController, vm = vm)
+        }
+        composable(DestinationScreen.ResetPasswordMailScreen.route){
+            ResetPaswordMail(navController = navController, vm = vm)
         }
         composable(DestinationScreen.ProfileScreen.route){
             ProfileScreen( navController, vm)

@@ -1,7 +1,6 @@
 package com.example.whatsapp.ui.theme
 
 import android.annotation.SuppressLint
-import android.graphics.fonts.FontFamily
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
@@ -42,13 +41,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
 import com.example.whatsapp.DestinationScreen
 import com.example.whatsapp.R
 import com.example.whatsapp.data.passwordChecker
-import com.example.whatsapp.navigateTo
+import com.example.whatsapp.utilities.navigateTo
 
 @SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class)

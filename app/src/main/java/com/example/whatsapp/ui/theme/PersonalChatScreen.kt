@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -33,13 +35,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale.Companion.Fit
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
-import com.example.whatsapp.CommonDivider
-import com.example.whatsapp.CommonImage
+import com.example.whatsapp.utilities.CommonDivider
+import com.example.whatsapp.utilities.CommonImage
+import com.example.whatsapp.DestinationScreen
+import com.example.whatsapp.R
 import com.example.whatsapp.data.Message
+import com.example.whatsapp.utilities.navigateTo
 
 @Composable
 fun personalChatScreen (navController: NavController, vm: CViewModel, chatId: String){
@@ -70,7 +76,7 @@ fun personalChatScreen (navController: NavController, vm: CViewModel, chatId: St
             chatMessages = chatMessages.value,
             currentUserId = myId?.userId ?: ""
         )
-        ReplyBox(reply = reply, onReplyChange = { reply = it }, onSendReply = onSendReply)
+        ReplyBox(reply = reply, onReplyChange = { reply = it }, onSendReply = onSendReply, navController = navController)
     }
 }
 @Composable
@@ -135,7 +141,7 @@ fun Messages(modifier: Modifier, chatMessages: List<Message>, currentUserId: Str
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReplyBox(reply: String, onReplyChange: (String) -> Unit, onSendReply: () -> Unit) {
+fun ReplyBox(navController: NavController,reply: String, onReplyChange: (String) -> Unit, onSendReply: () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         CommonDivider()
         Row(modifier = Modifier
@@ -143,7 +149,15 @@ fun ReplyBox(reply: String, onReplyChange: (String) -> Unit, onSendReply: () -> 
             .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextField(value = reply, onValueChange = onReplyChange, maxLines = 3)
+            IconButton(onClick = { navigateTo(navController, DestinationScreen.MapScreen.route) })
+            {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_navigation_24),
+                    contentDescription = "test",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            TextField(value = reply, onValueChange = onReplyChange, maxLines = 3, modifier = Modifier.width(256.dp))
             Button(onClick = onSendReply) {
                 Text(text = "Send")
             }

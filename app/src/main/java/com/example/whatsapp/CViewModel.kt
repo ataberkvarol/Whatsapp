@@ -48,7 +48,7 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
     val resetPassword = mutableStateOf(false)
     val emailSend = mutableStateOf(false)
     val signedUp = mutableStateOf(false)
-    val userData = mutableStateOf<UserData?>(null)
+    var userData = mutableStateOf<UserData?>(null)
     // chat
     val chats = mutableStateOf<List<ChatData>>(listOf())
     val inProgressChats = mutableStateOf(false)
@@ -113,7 +113,6 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
         popUpNotification.value = com.example.whatsapp.data.Event(message)
         inProgress.value = false
     }
-
 
     @SuppressLint("SuspiciousIndentation")
     private fun createOrUpdateProfile(
@@ -301,7 +300,6 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
        uploadImage(uri){
            Log.e("Uploadimageuri",uri.toString())
            createOrUpdateProfile(imageUrl = uri.toString())
-
        }
         createOrUpdateProfile(imageUrl = uri.toString())
     }
@@ -438,12 +436,6 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
                     handleException(error)
                 if (value!= null)
                     chats.value = value.documents.mapNotNull { it.toObject<ChatData>() }
-                /*
-                    chatMessages.value = value.documents
-                        .mapNotNull { it.toObject<Message>() }
-                        .sortedBy { it.timestamp }
-
-                 */
                 inProgressChats.value = false
             }
     }
@@ -463,7 +455,6 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
             }
             }
     }
-
     fun depopulateChat(){
         chatMessages.value = listOf()
         currentChatMessagesListener = null

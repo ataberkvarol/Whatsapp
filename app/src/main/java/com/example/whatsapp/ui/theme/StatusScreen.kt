@@ -19,8 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
-import com.example.whatsapp.CommonImage
-import javax.net.ssl.SSLEngineResult
+import com.example.whatsapp.utilities.CommonImage
 
 enum class ProgressIndicatorState {
     INITIAL,

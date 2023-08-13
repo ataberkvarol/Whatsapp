@@ -2,7 +2,6 @@ package com.example.whatsapp.ui.theme
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.media.browse.MediaBrowser
 import android.net.Uri
 import android.util.Log
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -10,7 +9,6 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -38,32 +35,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 //import androidx.media3.common.MediaItem
 //import androidx.media3.common.Player
 //import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
-import com.example.whatsapp.CommonDivider
+import com.example.whatsapp.utilities.CommonDivider
 import com.example.whatsapp.DestinationScreen
 import com.example.whatsapp.R
-import com.example.whatsapp.navigateTo
+import com.example.whatsapp.utilities.navigateTo
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
-import java.security.KeyStore.PasswordProtection
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import kotlin.math.log
 
 
 @SuppressLint("ResourceType")

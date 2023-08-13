@@ -48,6 +48,7 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Switch
@@ -202,6 +203,7 @@ fun ItemView(
     isClicked: MutableState<Boolean>
 ) {
     var permissionState = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()

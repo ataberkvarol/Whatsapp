@@ -37,7 +37,7 @@ import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
 import com.example.whatsapp.DestinationScreen
 import com.example.whatsapp.R
-import com.example.whatsapp.navigateTo
+import com.example.whatsapp.utilities.navigateTo
 
 @SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class)

@@ -24,12 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.whatsapp.CViewModel
-import com.example.whatsapp.CommonDivider
-import com.example.whatsapp.CommonProcessSpinner
-import com.example.whatsapp.CommonRow
+import com.example.whatsapp.utilities.CommonDivider
+import com.example.whatsapp.utilities.CommonProcessSpinner
+import com.example.whatsapp.utilities.CommonRow
 import com.example.whatsapp.DestinationScreen
-import com.example.whatsapp.TitleText
-import com.example.whatsapp.navigateTo
+import com.example.whatsapp.utilities.TitleText
+import com.example.whatsapp.utilities.navigateTo
 import com.example.whatsapp.ui.theme.BottomNavigation
 import com.example.whatsapp.ui.theme.BottomNavigationMenu
 

@@ -1,28 +1,23 @@
 package com.example.whatsapp
 
-import com.example.whatsapp.ui.theme.NotificationsScreen
 import ChatListScreen
 import StatusListScreen
 import StatusScreen
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.codingwithmitch.composegooglemaps.compose.MapScreen
+import com.example.whatsapp.cluster.ZoneClusterManager
+import com.example.whatsapp.data.MapState
 import com.example.whatsapp.ui.theme.SignupScreen
-import com.example.whatsapp.ui.theme.WhatsappTheme
 import com.example.whatsapp.ui.theme.loginScreen
 import com.example.whatsapp.ui.theme.personalChatScreen
 import com.example.whatsapp.ui.theme.ProfileScreen
@@ -30,6 +25,8 @@ import com.example.whatsapp.ui.theme.ResetPaswordMail
 import com.example.whatsapp.ui.theme.resetEmail
 import com.example.whatsapp.ui.theme.resetPassword
 import com.example.whatsapp.ui.theme.settingsScreen
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.AndroidEntryPoint
 
 /*TODO: status ekranını düzenle */
@@ -41,6 +38,7 @@ sealed class DestinationScreen(val route: String){
     object ChatListScreen : DestinationScreen("ChatListScreen")
     object ResetPasswordScreen : DestinationScreen("ResetPassword")
     object ResetEmailScreen : DestinationScreen("ResetEmail")
+    object MapScreen : DestinationScreen("MapScreen")
     object ResetPasswordMailScreen : DestinationScreen("ResetPasswordMail")
     object StatusScreen : DestinationScreen("StatusScreen/{userId}"){
         fun createRoute(userId:String) = "StatusScreen/$userId"
@@ -67,15 +65,23 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ChatAppNavigation() {
+
     val navController = rememberNavController()
     val vm = hiltViewModel<CViewModel>()
+    val mapvm = hiltViewModel<MapViewModel>()
+    var state:MapState
+    var setupClusterManager: (Context, GoogleMap) -> ZoneClusterManager
+    var calculateZoneViewCenter: () -> LatLngBounds
     
-    NavHost(navController = navController , startDestination =  DestinationScreen.Login.route){
+    NavHost(navController = navController , startDestination =  DestinationScreen.ChatListScreen.route){
         composable(DestinationScreen.Signup.route){
             SignupScreen(navController, vm)
         }
         composable(DestinationScreen.Login.route){
             loginScreen( navController,vm , videoUri = Uri.parse(R.raw.clouds.toString()))
+        }
+        composable(DestinationScreen.MapScreen.route){
+           // MapScreen(calculateZoneViewCenter = calculateZoneViewCenter, setupClusterManager = setupClusterManager , state = state)
         }
         composable(DestinationScreen.ResetPasswordScreen.route){
             resetPassword(navController = navController, vm = vm)
@@ -117,5 +123,4 @@ fun ChatAppNavigation() {
 
         }
     }
-    
 }

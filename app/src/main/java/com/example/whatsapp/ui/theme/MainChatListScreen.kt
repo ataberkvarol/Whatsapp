@@ -173,7 +173,7 @@ fun ChatListScreen(navController: NavController, vm: CViewModel) {
                                 Log.e("userId", chats.get(2).user1.userId.toString())
                                 Log.e("imageurl", chats.get(2).user1.imageUrl.toString())
                                chats.filter { chat ->
-                                    chat.user1.name?.contains(tf.text, ignoreCase = true) == true // verilerin yanlış gitmesindn ötürü name e çektim normalde number olmalı
+                                    chat.user2.name?.contains(tf.text, ignoreCase = true) == true || chat.user2.number?.contains(tf.text, ignoreCase = true)   == true  // verilerin yanlış gitmesindn ötürü name e çektim normalde number olmalı
                                 }
 
 
@@ -200,7 +200,7 @@ fun ChatListScreen(navController: NavController, vm: CViewModel) {
                                 ) {
                                     CommonRow(
                                         imageUrl = chatUser.imageUrl ?: "",
-                                        name = chatUser.name ?: "---",
+                                        name = chatUser.number ?: "---",// chatUser.name
                                         onItemClick = {
                                             // Handle the item click action here
                                             chat.chatId?.let { id ->

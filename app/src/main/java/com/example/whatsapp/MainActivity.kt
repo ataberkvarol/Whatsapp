@@ -9,9 +9,11 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
+import androidx.activity.viewModels
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.codingwithmitch.composegooglemaps.compose.MapScreen
@@ -60,8 +62,10 @@ sealed class DestinationScreen(val route: String){
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             ChatAppNavigation()
+
         }
     }
 }
@@ -72,10 +76,9 @@ fun ChatAppNavigation() {
     val navController = rememberNavController()
     val vm = hiltViewModel<CViewModel>()
     val mapvm = hiltViewModel<MapViewModel>()
-    var state:MapState
-    var setupClusterManager: (Context, GoogleMap) -> ZoneClusterManager
-    var calculateZoneViewCenter: () -> LatLngBounds
-    
+
+    val viewModel: MapViewModel
+
     NavHost(navController = navController , startDestination =  DestinationScreen.ChatListScreen.route){
         composable(DestinationScreen.Signup.route){
             SignupScreen(navController, vm)
@@ -84,7 +87,7 @@ fun ChatAppNavigation() {
             loginScreen( navController,vm , videoUri = Uri.parse(R.raw.clouds.toString()))
         }
         composable(DestinationScreen.MapScreen.route){
-           // MapScreen(calculateZoneViewCenter = calculateZoneViewCenter, setupClusterManager = setupClusterManager , state = state)
+            MapScreen(  state = MapActivity().viewModel.state.value, setupClusterManager = MapActivity().viewModel::setupClusterManager, calculateZoneViewCenter = MapActivity().viewModel::calculateZoneLatLngBounds, vm = mapvm )
         }
         composable(DestinationScreen.ResetPasswordScreen.route){
             resetPassword(navController = navController, vm = vm)
@@ -130,3 +133,5 @@ fun ChatAppNavigation() {
         }
     }
 }
+
+

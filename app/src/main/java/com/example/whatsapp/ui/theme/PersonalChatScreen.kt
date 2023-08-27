@@ -71,7 +71,7 @@ fun personalChatScreen (navController: NavController, vm: CViewModel, chatId: St
     }
     val chatMessages = vm.chatMessages
     Column(modifier = Modifier.fillMaxSize()) {
-        ChatHeader(name = chatUser.name ?: "", imageUrl = chatUser.imageUrl ?: "") {
+        ChatHeader(name = chatUser.number ?: "", imageUrl = chatUser.imageUrl ?: "") { // name nmber karııklğın dolay yanış geliyor
             navController.popBackStack()
             vm.depopulateChat()
         }

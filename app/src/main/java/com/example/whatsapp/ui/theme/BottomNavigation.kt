@@ -39,7 +39,7 @@ fun BottomNavigationMenu(selectedItem:BottomNavigation, navController: NavContro
                     contentDescription = null,
                     modifier = Modifier
                     .size(40.dp)
-                    .background(Color.LightGray)
+                    .background(Color.White)
                         .padding(4.dp)
                     .weight(1f)
                     .clickable {

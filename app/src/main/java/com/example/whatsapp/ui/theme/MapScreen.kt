@@ -2,12 +2,14 @@ package com.codingwithmitch.composegooglemaps.compose
 
 import android.content.Context
 import android.location.Location
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.example.whatsapp.CViewModel
 import com.example.whatsapp.MapViewModel
 import com.example.whatsapp.cluster.ZoneClusterManager
 import com.example.whatsapp.data.MapState
@@ -22,8 +24,10 @@ import kotlinx.coroutines.launch
 fun MapScreen(
     state: MapState,
     setupClusterManager: (Context, GoogleMap) -> ZoneClusterManager,
-    calculateZoneViewCenter: () -> LatLngBounds
+    calculateZoneViewCenter: () -> LatLngBounds,
+  vm: MapViewModel
 ) {
+    Log.e("mapscreen","input")
     // Set properties using MapProperties which you can use to recompose the map
     val mapProperties = MapProperties(
         // Only enable if user has accepted location permissions.

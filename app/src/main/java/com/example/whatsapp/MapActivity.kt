@@ -1,6 +1,5 @@
 package com.example.whatsapp
 
-
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -13,9 +12,28 @@ import androidx.navigation.NavController
 import com.codingwithmitch.composegooglemaps.compose.MapScreen
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
 
 
 class MapActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        askPermissions()
+        /*
+        setContent {
+            MapScreen(
+                state = viewModel.state.value,
+                setupClusterManager = viewModel::setupClusterManager,
+                calculateZoneViewCenter = viewModel::calculateZoneLatLngBounds,
+                vm = viewModel
+            )
+        }
+
+         */
+    }
     private val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -38,18 +56,7 @@ class MapActivity : ComponentActivity() {
     }
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val viewModel: MapViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        askPermissions()
-        setContent {
-            MapScreen(
-                state = viewModel.state.value,
-                setupClusterManager = viewModel::setupClusterManager,
-                calculateZoneViewCenter = viewModel::calculateZoneLatLngBounds
-            )
-        }
-    }
+
+    public val viewModel: MapViewModel by viewModels()
 }

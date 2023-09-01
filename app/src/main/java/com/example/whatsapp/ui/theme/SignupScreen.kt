@@ -162,13 +162,20 @@ fun SignupScreen (navController:NavController,vm:CViewModel) {
                     focus.clearFocus(force = true)
                     var isSuitablePassword:Boolean
                     isSuitablePassword = passwordChecker().checkAllConditions(passwordState.value.text)
+                    Log.e("pass",isSuitablePassword.toString())
                     if (isSuitablePassword) {
                         var isSignedUp = vm.signUp(
                             nameState.value.text,
                             numberState.value.text,
                             emailState.value.text,
                             passwordState.value.text
+
+
                         )
+                        Log.e("signup", nameState.value.text)
+                        Log.e("signup",  numberState.value.text)
+                        Log.e("signup",  emailState.value.text)
+                        Log.e("signup",   passwordState.value.text)
                         if (isSignedUp) {
                             navigateTo(navController, DestinationScreen.Login.route)
                         } else

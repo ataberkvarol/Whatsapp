@@ -136,13 +136,14 @@ class CViewModel @Inject constructor(val auth:FirebaseAuth, val db: FirebaseFire
             db.collection(COLLECTON_USER).document(uid).get().addOnSuccessListener {
                 if (it.exists()) {
                     Log.e("save","success")
+                    Log.e("teeest", db.collection(COLLECTON_USER).document(uid).get().toString())
                     it.reference.update(userData as Map<String, Any>)
                         .addOnSuccessListener { inProgress.value = false }
                         .addOnFailureListener { handleException(customMessage = "cannot update user") }
                 } else
                     db.collection(COLLECTON_USER).document(uid).set(userData)
                     inProgress.value = false
-                Log.e("save","failed")
+                Log.e("save","cannot create user save failed")
             }.addOnFailureListener { handleException(it, "cannot create user save failed") }
         }
     }

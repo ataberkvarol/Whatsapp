@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -57,6 +58,7 @@ import com.example.whatsapp.ui.theme.BottomNavigationMenu
 
 //import com.example.whatsapp.ui.theme.CommonProgressSpinner
 //COMMON PRGRES SPINNER I YAZ
+//silmeyi yap
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -175,8 +177,6 @@ fun ChatListScreen(navController: NavController, vm: CViewModel) {
                                chats.filter { chat ->
                                     chat.user2.name?.contains(tf.text, ignoreCase = true) == true || chat.user2.number?.contains(tf.text, ignoreCase = true)   == true  // verilerin yanlış gitmesindn ötürü name e çektim normalde number olmalı
                                 }
-
-
                             } else {
                                 chats
                             }
